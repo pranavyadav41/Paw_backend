@@ -1,5 +1,5 @@
 import { httpServer } from "./infrastructure/config/app";
-import { connectDB } from "./infrastructure/config/db";
+import { connectDB } from "./infrastructure/config/connectDB";
 
 const PORT = process.env.PORT || 3000
 
