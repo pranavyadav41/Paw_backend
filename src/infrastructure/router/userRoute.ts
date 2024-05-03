@@ -31,6 +31,9 @@ route.get('/hello',(req,res)=>{
 })
 
 route.post('/sign_up',(req,res)=>userController.signUp(req,res))
+route.post('/verify',(req,res)=>userController.verifyOtp(req,res))
+
+
 
 
 

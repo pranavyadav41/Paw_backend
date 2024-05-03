@@ -34,6 +34,23 @@ class UserUseCase{
             }
         }
     }
+    async verifyOtpUser(user:User){
+
+        const hashedPassword = await this.EncryptPassword.encryptPassword(user.password)
+
+        const newUser={...user,password:hashedPassword}
+
+        const userData=await this.UserRepository.save(newUser)
+
+        return {
+            status:200,
+            data:userData
+        }
+
+
+
+
+    }
 }
 
 export default UserUseCase

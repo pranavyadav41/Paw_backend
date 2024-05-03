@@ -16,8 +16,9 @@ const useSchema:Schema = new Schema<User | Document>(
             type:String,
             required:true
         },
-        mobileNumber:{
+        phone:{
             type:String,
+            required:true
         },
         isBlocked:{
             type:Boolean,

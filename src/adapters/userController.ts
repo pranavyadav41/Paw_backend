@@ -1,4 +1,4 @@
-import { Request,Response } from "express";
+import { Request,Response, response } from "express";
 import UserUseCase from "../useCase/userUsecase"
 import asyncHandler from "express-async-handler"
 import GenerateOtp from "../infrastructure/services/generateOtp";
@@ -50,6 +50,28 @@ class userController{
           }
             
         }
-    }
+        async verifyOtp(req:Request,res:Response){
+            try {
+                if(req.body.otp==req.app.locals.otp){
+                    const user=await this.userUseCase.verifyOtpUser(req.app.locals.userData)
+                    req.app.locals.userData=null
+                    req.app.locals.otp=null
+                    res.status(user.status).json(user.data)
+                }else{
+                    res.status(400).json({status:false,message:'Invalid otp'})
+                }
+                
+            } catch (error) {
+                const err: Error = error as Error;
+                res.status(400).json({
+                  message: err.message,
+                  stack: process.env.NODE_ENV === "production" ? null : err.stack,
+                });
+                console.log("iam stack", err.stack, "---", "iam message", err.message);
+              }
+                
+            }
+        }
+   
 
 export default userController
