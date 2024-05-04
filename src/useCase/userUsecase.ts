@@ -42,14 +42,84 @@ class UserUseCase{
 
         const userData=await this.UserRepository.save(newUser)
 
+        const token =this.JwtToken.generateToken(userData._id,'user')
+
+        console.log(token)
+
         return {
             status:200,
-            data:userData
+            data:userData,
+            token
         }
+    }
+    async login(email:string,password:string){
+        
+        const user=await this.UserRepository.findByEmail(email)
+        let token=''
 
+        if(user){
 
+            if(user.isBlocked){
+                return {
+                    status:400,
+                    data: {
+                        status:false,
+                        message:'You have been blocked by admin!',
+                        token:''
+                    }
 
+                }
 
+            }
+
+            const passwordMatch=await this.EncryptPassword.compare(password,user.password)
+
+            if(passwordMatch && user.isAdmin){
+                token=this.JwtToken.generateToken(user._id,'admin')
+
+                return {
+                    status:200,
+                    data:{
+                        status:true,
+                        message:user,
+                        token,
+                        isAdmin:true
+                    }
+                }
+            }
+
+            if(passwordMatch){
+                token=this.JwtToken.generateToken(user._id,'user')
+
+                return {
+                    status:200,
+                    data:{
+                        status:true,
+                        message:user,
+                        token
+                    }
+                }
+            }else{
+                return {
+                    status:400,
+                    data:{
+                        status:false,
+                        message:"Invalid email or password",
+                        token:''
+                    }
+                }
+            }
+        }else{
+
+            return {
+                status:400,
+                data:{
+                    status:false,
+                    message:"Invalid email or password",
+                    token:''
+                }
+            }
+        }
     }
 }
 

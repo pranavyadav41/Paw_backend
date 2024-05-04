@@ -26,12 +26,10 @@ const userController=new UserController(userCase,generateOtp,generateEmail)
 
 const route = express.Router();
 
-route.get('/hello',(req,res)=>{
-    res.send("hello")
-})
 
 route.post('/sign_up',(req,res)=>userController.signUp(req,res))
 route.post('/verify',(req,res)=>userController.verifyOtp(req,res))
+route.post('/login',(req,res)=>userController.login(req,res))
 
 
 
