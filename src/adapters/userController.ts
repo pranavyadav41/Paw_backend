@@ -24,15 +24,20 @@ class userController{
 
            const verifyUser = await this.userUseCase.signup(req.body.email)
 
+           if(verifyUser.data.status==true && req.body.isGoogle){
+            const user=await this.userUseCase.verifyOtpUser(req.body)
+            res.status(user.status).json(user.data)
+           }
+
            if(verifyUser.data.status==true){
-            req.app.locals.userData = req.body
-            const otp=this.generateOtp.createOtp()
-            req.app.locals.otp=otp
+            (req.session as any).userData = req.body
+            const otp=this.generateOtp.createOtp();
+            (req.session as any).otp=otp
             this.generateEmail.sendMail(req.body.name,req.body.email,otp)
             console.log(otp)
 
             setTimeout(()=>{
-                req.app.locals.otp=this.generateOtp.createOtp()
+                (req.session as any).otp=this.generateOtp.createOtp()
             },2*60000)
 
             res.status(verifyUser.status).json(verifyUser.data)
@@ -52,10 +57,10 @@ class userController{
         }
         async verifyOtp(req:Request,res:Response){
             try {
-                if(req.body.otp==req.app.locals.otp){
-                    const user=await this.userUseCase.verifyOtpUser(req.app.locals.userData)
-                    req.app.locals.userData=null
-                    req.app.locals.otp=null
+                if(req.body.otp==(req.session as any).otp){
+                    const user=await this.userUseCase.verifyOtpUser((req.session as any).userData);
+                    (req.session as any).userData=null;
+                    (req.session as any).otp=null;
                     res.status(user.status).json(user.data)
                 }else{
                     res.status(400).json({status:false,message:'Invalid otp'})

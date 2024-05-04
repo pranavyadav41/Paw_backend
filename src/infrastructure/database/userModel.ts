@@ -18,7 +18,6 @@ const useSchema:Schema = new Schema<User | Document>(
         },
         phone:{
             type:String,
-            required:true
         },
         isBlocked:{
             type:Boolean,
