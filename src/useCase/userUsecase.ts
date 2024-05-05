@@ -18,8 +18,8 @@ class UserUseCase{
         const userExist=await this.UserRepository.findByEmail(email)
 
         if(userExist){
-            return {
-                status:400,
+            return { 
+                status:400, 
                 data:{
                     status:false,
                     message:'User already exists'

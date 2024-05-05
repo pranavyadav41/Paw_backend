@@ -10,17 +10,16 @@ import JWTToken from '../services/generateToken';
 
 //services
 
-const generateOtp=new GenerateOtp()
+const generateOtp=new GenerateOtp() 
 const generateEmail=new sendOtp()
 const encryptPassword=new EncryptPassword()
 const jwtToken=new JWTToken()
 
 //repositories
-const userRepository=new UserRepository()
+const userRepository=new UserRepository() 
 
 //useCases
 const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken)
-
 //controllers
 const userController=new UserController(userCase,generateOtp,generateEmail)
 

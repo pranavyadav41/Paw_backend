@@ -8,4 +8,4 @@ interface UserRepo {
     findAllUsers():Promise<{}[] | null>;
 }
 
-export default UserRepo;
+export default UserRepo;  

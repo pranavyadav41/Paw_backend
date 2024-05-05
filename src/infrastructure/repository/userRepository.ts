@@ -6,7 +6,7 @@ import UserRepo from '../../useCase/interface/userRepo'
 class UserRepository implements UserRepo {
 
     //saving user details to database
-    async save(user: User): Promise<User> {
+    async save(user: User): Promise<User> { 
 
         const newUser = new UserModel(user)
         const savedUser = await newUser.save()

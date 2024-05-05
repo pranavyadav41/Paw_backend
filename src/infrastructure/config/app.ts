@@ -8,6 +8,7 @@ import http from 'http';
 
 //Routes root
 import userRoute from '../router/userRoute'
+import adminRoute from '../router/adminRoute'
 
 
 
@@ -35,5 +36,6 @@ app.use(cors({
 
 
 app.use("/api/user",userRoute)
+app.use("/api/admin",adminRoute)
 
 export {httpServer}
