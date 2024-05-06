@@ -15,7 +15,7 @@ class sendOtp{
         })
     }
 
-    sendMail(name:string,email:string,verif_code:number):void{
+    sendMail(email:string,verif_code:number):void{
         const mailOptions :nodemailer.SendMailOptions = {
             from:'akpranavyadav@gmail.com',
             to:email,

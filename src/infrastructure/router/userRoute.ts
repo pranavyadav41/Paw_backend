@@ -29,6 +29,8 @@ const route = express.Router();
 route.post('/sign_up',(req,res)=>userController.signUp(req,res))
 route.post('/verify',(req,res)=>userController.verifyOtp(req,res))
 route.post('/login',(req,res)=>userController.login(req,res))
+route.post('/verifyEmail',(req,res)=>userController.forgotPassword(req,res))
+route.post('/resetPassword',(req,res)=>userController.resetPassword(req,res))
 
 
 

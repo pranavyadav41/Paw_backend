@@ -7,7 +7,7 @@ class adminRepository implements adminRepo{
 
     async getUsers(): Promise<{}[] | null> {
 
-        let users=await UserModel.find()
+        let users=await UserModel.find({isAdmin:false})
         return users
         
     }

@@ -1,12 +1,11 @@
 import { Request, Response, response } from "express";
 import UserUseCase from "../useCase/userUsecase";
-import asyncHandler from "express-async-handler";
 import GenerateOtp from "../infrastructure/services/generateOtp";
 import sendOtp from "../infrastructure/services/sendEmail";
 
 class userController {
   private userUseCase: UserUseCase;
-  private generateOtp: GenerateOtp; 
+  private generateOtp: GenerateOtp;
   private generateEmail: sendOtp;
 
   constructor(
@@ -31,13 +30,9 @@ class userController {
       if (verifyUser.data.status == true) {
         (req.session as any).userData = req.body;
         const otp = this.generateOtp.createOtp();
-        console.log(otp);
         (req.session as any).otp = otp;
-        this.generateEmail.sendMail(req.body.name, req.body.email, otp);
-
-        setTimeout(() => {
-          (req.session as any).otp = this.generateOtp.createOtp();
-        }, 2 * 60000);
+        console.log(otp);
+        this.generateEmail.sendMail(req.body.email, otp);
 
         res.status(verifyUser.status).json(verifyUser.data);
       } else {
@@ -52,7 +47,10 @@ class userController {
   }
   async verifyOtp(req: Request, res: Response) {
     try {
-      if (req.body.otp == (req.session as any).otp) {
+      if (req.body.userId !== "" && req.body.otp == (req.session as any).otp) {
+        (req.session as any).otp = null;
+        res.json({ message: "Verified successfully", userId: req.body.userId });
+      } else if (req.body.otp == (req.session as any).otp) {
         const user = await this.userUseCase.verifyOtpUser(
           (req.session as any).userData
         );
@@ -75,8 +73,52 @@ class userController {
 
       const user = await this.userUseCase.login(email, password);
 
-      res.status(user.status).json(user);
-    } catch (error) {}
+      res.status(user.status).json(user.data);
+    } catch (error) {
+      const err: Error = error as Error;
+      res.status(400).json({
+        message: err.message,
+      });
+    }
+  }
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      const user = await this.userUseCase.forgotPassword(email);
+
+      if (user.status == 200) {
+        const otp = this.generateOtp.createOtp();
+        (req.session as any).otp = otp;
+        this.generateEmail.sendMail(email, otp);
+
+        res.status(user.status).json(user.data);
+      } else {
+        res.status(user.status).json(user.data);
+      }
+    } catch (error) {
+      const err: Error = error as Error;
+      res.status(400).json({
+        message: err.message,
+      });
+    }
+  }
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { password, userId } = req.body;
+
+      const changePassword = await this.userUseCase.resetPassword(
+        password,
+        userId
+      );
+
+      res.status(changePassword.status).json(changePassword.message);
+    } catch (error) {
+      const err: Error = error as Error;
+      res.status(400).json({
+        message: err.message,
+      });
+    }
   }
 }
 
