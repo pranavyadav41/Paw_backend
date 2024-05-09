@@ -3,7 +3,7 @@ import Nodemailer from "../../useCase/interface/nodemailerInterface";
 import dotenv from 'dotenv'
 dotenv.config()
 
-class sendOtp{
+class sendOtp implements Nodemailer{
     private transporter : nodemailer.Transporter
     constructor(){
         this.transporter = nodemailer.createTransport({
@@ -15,12 +15,12 @@ class sendOtp{
         })
     }
 
-    sendMail(email:string,verif_code:number):void{
+    sendMail(email:string,otp:number):void{
         const mailOptions :nodemailer.SendMailOptions = {
             from:'akpranavyadav@gmail.com',
             to:email,
             subject:'Paw Email Verification',
-            text: `${email},your verification code is: ${verif_code}`
+            text: `${email},your verification code is: ${otp}`
         }
         this.transporter.sendMail(mailOptions,(err)=>{
             if(err){
@@ -29,6 +29,23 @@ class sendOtp{
                 console.log('verification code sent successfully')
             }
         })
+    }
+
+    sendConfirmation(email:string){
+        const mailOptions :nodemailer.SendMailOptions = {
+            from:'akpranavyadav@gmail.com',
+            to:email,
+            subject:'Your Franchise Request Has Been Approved',
+            text: `We are pleased to inform you that your request to become a franchisee of our company has been approved. Congratulations!`
+        }
+        this.transporter.sendMail(mailOptions,(err)=>{
+            if(err){
+                console.log(err)
+            }else{
+                console.log('Confirmation email sent successfully')
+            }
+        })
+
     }
 }
 

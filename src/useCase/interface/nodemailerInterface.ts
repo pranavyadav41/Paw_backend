@@ -1,5 +1,5 @@
 interface Nodemailer{
-    sendOtp(email:string):Promise<boolean>
-    verifyOtp(email:string,otp:string):Promise<boolean>
+    sendConfirmation(email:string):void
+    sendMail(email:string,otp:number):void
 }
 export default Nodemailer

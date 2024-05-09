@@ -4,7 +4,7 @@ import EncryptPassword from "../infrastructure/services/bcryptPassword";
 import JWTToken from "../infrastructure/services/generateToken";
 
 class UserUseCase{
-    private UserRepository:UserRepository
+    private UserRepository:UserRepository 
     private EncryptPassword:EncryptPassword
     private JwtToken:JWTToken
 
@@ -33,7 +33,7 @@ class UserUseCase{
                 message:'Verification otp sent to your email'
             }
         }
-    }
+    } 
     async verifyOtpUser(user:User){
 
         const hashedPassword = await this.EncryptPassword.encryptPassword(user.password)
@@ -45,7 +45,7 @@ class UserUseCase{
         const token =this.JwtToken.generateToken(userData._id,'user')
 
         return {
-            status:200,
+            status:200, 
             data:userData,
             token
         }
