@@ -20,7 +20,7 @@ class FranchiseReq {
 
       return res.status(verify.status).json(verify.data);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }

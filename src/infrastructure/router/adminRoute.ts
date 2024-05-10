@@ -28,6 +28,8 @@ route.get('/getRequests',(req,res,next)=>adminController.getFranchiseRequests(re
 route.post('/approveRequest',(req,res,next)=>adminController.approveFranchise(req,res,next))
 route.post('/rejectRequest',(req,res,next)=>adminController.rejectFranchise(req,res,next))
 route.get('/getFranchises',(req,res,next)=>adminController.getFranchises(req,res,next))
+route.post('/blockFranchise',(req,res,next)=>adminController.blockFranchise(req,res,next))
+route.post('/unBlockFranchise',(req,res,next)=>adminController.unBlockFranchise(req,res,next))
 
 route.use(errorHandle)
 

@@ -68,17 +68,17 @@ class adminController {
     try {
       const approve = await this.AdminUseCase.approveFranchise(req.body.reqId);
 
-      if (approve) {
-        if (approve.status == 200) {
-          const dataWithDetails = approve.data as {
-            status: boolean;
-            message: string;
-            details: franchise;
-          };
-          this.SendMail.sendConfirmation(dataWithDetails.details.email);
-          return res.status(approve.status).json(approve.data.message);
-        }
+      if (approve?.status == 401) {
+        return res.status(401).json({ message: "Account already exist" });
+      }
 
+      if (approve?.status == 200) {
+        const dataWithDetails = approve.data as {
+          status: boolean;
+          message: string;
+          details: franchise;
+        };
+        this.SendMail.sendConfirmation(dataWithDetails.details.email);
         return res.status(approve.status).json(approve.data.message);
       }
     } catch (error) {
@@ -87,10 +87,14 @@ class adminController {
   }
   async rejectFranchise(req: Request, res: Response, next: NextFunction) {
     try {
-      const reject = await this.AdminUseCase.rejectFranchise(req.body.reqId);
+      const reject: any = await this.AdminUseCase.rejectFranchise(
+        req.body.reqId
+      );
 
-      if (reject) {
-        return res.status(reject.status).json(reject.data.message);
+      if (reject.status == 200) {
+        this.SendMail.sendRejection(reject.data.email);
+
+        return res.status(reject.status).json({ message: reject.data.message });
       }
     } catch (error) {
       next(error);
@@ -104,6 +108,30 @@ class adminController {
           return res.status(franchises.status).json(franchises.data);
         }
         return res.status(franchises.status).json(franchises.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async blockFranchise(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.AdminUseCase.blockFranchise(
+        req.body.franchiseId
+      );
+      if (result) {
+        return res.status(result.status).json(result.data.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async unBlockFranchise(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.AdminUseCase.unBlockFranchise(
+        req.body.franchiseId
+      );
+      if (result) {
+        return res.status(result.status).json(result.data.message);
       }
     } catch (error) {
       next(error);

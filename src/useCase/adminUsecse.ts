@@ -85,9 +85,16 @@ class adminUseCase {
   async approveFranchise(reqId: string) {
     const reqData = await this.AdminRepo.approveFranchise(reqId);
 
-    if (reqData) {
-      let franchiseData = reqData;
-      let details = await this.franchiseRepo.save(franchiseData);
+    if (reqData == false) {
+      return {
+        status: 401,
+        data: {
+          status: false,
+          message: "Account already exist OR some internal error",
+        },
+      };
+    } else if (reqData) {
+      let details = await this.franchiseRepo.save(reqData);
 
       if (details) {
         return {
@@ -99,13 +106,6 @@ class adminUseCase {
           },
         };
       }
-      return {
-        status: 400,
-        data: {
-          status: false,
-          message: "failed Please try again!",
-        },
-      };
     } else {
       return {
         status: 400,
@@ -119,12 +119,13 @@ class adminUseCase {
   async rejectFranchise(reqId: string) {
     const reqData = await this.AdminRepo.rejectFranchise(reqId);
 
-    if (reqData) {
+    if (reqData.status == true) {
       return {
         status: 200,
         data: {
           status: true,
           message: "Rejected successfully",
+          email: reqData.email,
         },
       };
     } else {
@@ -138,18 +139,60 @@ class adminUseCase {
     }
   }
   async getFranchises() {
-    const data = await this.AdminRepo.getFranchises()
+    const data = await this.AdminRepo.getFranchises();
 
-    if(data){
+    if (data) {
       return {
-        status:200,
-        data:data
-      }
-    }else{
+        status: 200,
+        data: data,
+      };
+    } else {
       return {
-        status:400,
-        message:"failed to fetch the data!please try again"
-      }
+        status: 400,
+        message: "failed to fetch the data!please try again",
+      };
+    }
+  }
+  async blockFranchise(franchiseId: string) {
+    const block = await this.AdminRepo.blockFranchise(franchiseId);
+
+    if (block) {
+      return {
+        status: 200,
+        data: {
+          status: true,
+          message: "Blocked franchise successfully",
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          status: true,
+          message: "Failed to block franchise please try again",
+        },
+      };
+    }
+  }
+  async unBlockFranchise(franchiseId: string) {
+    const unBlock = await this.AdminRepo.unBlockFranchise(franchiseId);
+
+    if (unBlock) {
+      return {
+        status: 200,
+        data: {
+          status: true,
+          message: "Unblocked franchise successfully",
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          status: true,
+          message: "Failed to unblock franchise please try again",
+        },
+      };
     }
   }
 }
