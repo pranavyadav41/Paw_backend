@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import UserUseCase from "../useCase/userUsecase";
 import GenerateOtp from "../infrastructure/services/generateOtp";
 import sendOtp from "../infrastructure/services/sendEmail";
+import SessionData from "../domain/sessionData";
 
 class userController {
   private userUseCase: UserUseCase;
@@ -14,7 +15,7 @@ class userController {
     generateEmail: sendOtp
   ) {
     this.userUseCase = userUseCase;
-    this.generateOtp = generateOtp;
+    this.generateOtp = generateOtp; 
     this.generateEmail = generateEmail;
   }
 

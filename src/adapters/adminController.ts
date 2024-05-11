@@ -137,6 +137,43 @@ class adminController {
       next(error);
     }
   }
+  async addService(req: Request, res: Response, next: NextFunction) {
+    try {
+      const save = await this.AdminUseCase.addService(req.body.service);
+
+      if (save) {
+        return res.status(save.status).json(save.data.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async editService(req: Request, res: Response, next: NextFunction) {
+    try {
+      const edit = await this.AdminUseCase.editService(req.body.service);
+
+      if (edit) {
+        return res.status(edit.status).json(edit.data.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async deleteService(req: Request, res: Response, next: NextFunction) {
+    try {
+      const deleteService = await this.AdminUseCase.deleteService(
+        req.body.serviceId
+      );
+
+      if (deleteService) {
+        return res
+          .status(deleteService.status)
+          .json(deleteService.data.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default adminController;

@@ -1,11 +1,11 @@
 import UserModel from "../database/userModel";
 import FranchiseReqModel from "../database/franchiseReqModel";
 import FranchiseModel from "../database/franchiseModel";
-import { ObjectId } from "mongodb";
-import * as mongoose from "mongoose";
+import ServiceModel from "../database/serviceModal";
 import adminRepo from "../../useCase/interface/adminRepo";
 import franchise from "../../domain/franchise";
 import approve from "../../domain/approval";
+import Service from "../../domain/service";
 
 class adminRepository implements adminRepo {
   async getUsers(): Promise<{}[] | null> {
@@ -60,23 +60,24 @@ class adminRepository implements adminRepo {
     }
     return false;
   }
-  async rejectFranchise(reqId: string): Promise<{status:boolean;email:string}> {
+  async rejectFranchise(
+    reqId: string
+  ): Promise<{ status: boolean; email: string }> {
     let data = await FranchiseReqModel.findOne({ _id: reqId });
 
-    if(data){
+    if (data) {
+      let reject = await FranchiseReqModel.deleteOne({ _id: reqId });
 
-    let reject = await FranchiseReqModel.deleteOne({ _id: reqId });
-
-    return {
-      status:true,
-      email:data.email
+      return {
+        status: true,
+        email: data.email,
+      };
     }
+    return {
+      status: false,
+      email: " ",
+    };
   }
-  return {
-    status:false,
-    email:" "
-  }
-}
   async getFranchises(): Promise<{}[] | null> {
     let franchises = await FranchiseModel.find();
 
@@ -96,6 +97,34 @@ class adminRepository implements adminRepo {
       { $set: { isBlocked: false } }
     );
     return unBlock.modifiedCount > 0;
+  }
+  async addService(service: Service): Promise<boolean> {
+    let newService = new ServiceModel(service);
+    let save = await newService.save();
+
+    if (save) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  async editService(service: Service): Promise<boolean> {
+    let editService = await ServiceModel.updateOne(
+      { _id: service },
+      {
+        $set: { service },
+      }
+    );
+    return editService.modifiedCount > 0;
+  }
+  async deleteService(serviceId: string): Promise<boolean> {
+    let deleteService = await ServiceModel.deleteOne({ _id: serviceId });
+
+    if (deleteService) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 export default adminRepository;

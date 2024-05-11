@@ -1,6 +1,7 @@
  import User from "../../domain/user"
  import franchise from "../../domain/franchise";
  import approve from "../../domain/approval";
+ import Service from "../../domain/service";
  
  interface adminRepo{
     getUsers():Promise<{}[] | null>;
@@ -13,6 +14,11 @@
     getFranchises():Promise<{}[] | null>
     blockFranchise(franchiseId:string):Promise<boolean>
     unBlockFranchise(franchiseId:string):Promise<boolean>
+    addService(service:Service):Promise<boolean>
+    editService(service:Service):Promise<boolean>
+    deleteService(serviceId:string):Promise<boolean>
+
+
    
    }
 

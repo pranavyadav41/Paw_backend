@@ -1,5 +1,6 @@
 import adminRepo from "../infrastructure/repository/adminRepository";
 import FranchiseRepo from "./interface/Franchise/franchiseRepo";
+import Service from "../domain/service";
 import franchise from "../domain/franchise";
 
 class adminUseCase {
@@ -193,6 +194,70 @@ class adminUseCase {
           message: "Failed to unblock franchise please try again",
         },
       };
+    }
+  }
+  async addService(service:Service) {
+    const save = await this.AdminRepo.addService(service)
+
+    if(save){
+      return {
+        status:200,
+        data:{
+          status:true,
+          message:"Service added successfully"
+        }
+      }
+    }else{
+      return {
+        status:400,
+        data:{
+          status:false,
+          message:"Failed please try again"
+        }
+      }
+    }
+  }
+  async editService(service:Service){
+    const save = await this.AdminRepo.editService(service)
+
+    if(save){
+      return {
+        status:200,
+        data:{
+          status:true,
+          message:"Data edited successfully"
+        }
+      }
+    }else{
+      return {
+        status:400,
+        data:{
+          status:true,
+          message:"Failed to edit"
+        }
+      }
+    }
+  }
+  async deleteService(serviceId:string){
+    const deleteService = await this.AdminRepo.deleteService(serviceId)
+
+    if(deleteService){
+      return {
+        status:200,
+        data:{
+          status:true,
+          message:"Service deleted successfully"
+        }
+      }
+
+    }else{
+      return {
+        status:400,
+        data:{
+          status:false,
+          message:"Failed to delete"
+        }
+      }
     }
   }
 }
