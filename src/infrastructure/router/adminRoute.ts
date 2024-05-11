@@ -34,6 +34,7 @@ route.post('/unBlockFranchise',(req,res,next)=>adminController.unBlockFranchise(
 route.post('/addService',(req,res,next)=>adminController.addService(req,res,next))
 route.post('/editService',(req,res,next)=>adminController.editService(req,res,next))
 route.post('/deleteService',(req,res,next)=>adminController.deleteService(req,res,next))
+route.get('/getServices',(req,res,next)=>adminController.getServices(req,res,next))
 
 route.use(errorHandle)
 

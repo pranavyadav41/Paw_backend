@@ -14,9 +14,11 @@
     getFranchises():Promise<{}[] | null>
     blockFranchise(franchiseId:string):Promise<boolean>
     unBlockFranchise(franchiseId:string):Promise<boolean>
+    findService(categoryName:string):Promise<Service | null>
     addService(service:Service):Promise<boolean>
     editService(service:Service):Promise<boolean>
     deleteService(serviceId:string):Promise<boolean>
+    getServices():Promise<{}[] | null>
 
 
    

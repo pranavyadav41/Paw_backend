@@ -14,16 +14,20 @@ const serviceSchema: Schema = new Schema<Service>({
     ],
     price: {
         small: {
-            type: Number,
+            type: String,
             required: true
         },
         medium: {
-            type: Number,
+            type: String,
             required: true
         },
         large: {
-            type: Number,
+            type: String,
             required: true
+        },
+        xLarge:{
+            type:String,
+            required:true
         }
     }
 });

@@ -2,9 +2,10 @@ interface Service {
   category: string;
   services: string[];
   price: {
-      small: number;
-      medium: number;
-      large: number;
+      small: string;
+      medium: string;
+      large: string;
+      xLarge:string;
   };
 
 }

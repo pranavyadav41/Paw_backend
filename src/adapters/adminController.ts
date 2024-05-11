@@ -69,7 +69,9 @@ class adminController {
       const approve = await this.AdminUseCase.approveFranchise(req.body.reqId);
 
       if (approve?.status == 401) {
-        return res.status(401).json({ message: "Account already exist" });
+        return res
+          .status(approve.status)
+          .json({ message: approve.data.message });
       }
 
       if (approve?.status == 200) {
@@ -141,8 +143,10 @@ class adminController {
     try {
       const save = await this.AdminUseCase.addService(req.body.service);
 
+      console.log(save);
+
       if (save) {
-        return res.status(save.status).json(save.data.message);
+        return res.status(save.status).json({ message: save.data.message });
       }
     } catch (error) {
       next(error);
@@ -170,6 +174,19 @@ class adminController {
           .status(deleteService.status)
           .json(deleteService.data.message);
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getServices(req: Request, res: Response, next: NextFunction) {
+    try {
+      const services = await this.AdminUseCase.getServices();
+
+      if (services.status == 200) {
+        return res.status(services.status).json(services.data);
+      }
+
+      return res.status(services.status).json({ message: services.message });
     } catch (error) {
       next(error);
     }

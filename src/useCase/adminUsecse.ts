@@ -91,7 +91,7 @@ class adminUseCase {
         status: 401,
         data: {
           status: false,
-          message: "Account already exist OR some internal error",
+          message: "Account already exist",
         },
       };
     } else if (reqData) {
@@ -197,6 +197,21 @@ class adminUseCase {
     }
   }
   async addService(service:Service) {
+
+    const match = await this.AdminRepo.findService(service.category)
+
+    if(match){
+      return {
+        status:400,
+        data:{
+          status:false,
+          message:"Service already exist"
+        }
+      }
+    }
+
+
+
     const save = await this.AdminRepo.addService(service)
 
     if(save){
@@ -257,6 +272,21 @@ class adminUseCase {
           status:false,
           message:"Failed to delete"
         }
+      }
+    }
+  }
+  async getServices(){
+    const services = await this.AdminRepo.getServices()
+
+    if(services){
+      return {
+        status:200,
+        data:services
+      }
+    }else{
+      return {
+        status:400,
+        message:"Failed to get data"
       }
     }
   }

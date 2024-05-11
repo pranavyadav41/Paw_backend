@@ -98,6 +98,23 @@ class adminRepository implements adminRepo {
     );
     return unBlock.modifiedCount > 0;
   }
+  async findService(category: string): Promise<Service | null> {
+    let match:any = await ServiceModel.findOne({ category: category });
+
+    if(!match){
+      return null
+    }
+
+    const service:Service={
+      category:match.category,
+      services:match.services,
+      price:match.price
+
+    }
+    return service
+
+  
+  }
   async addService(service: Service): Promise<boolean> {
     let newService = new ServiceModel(service);
     let save = await newService.save();
@@ -125,6 +142,11 @@ class adminRepository implements adminRepo {
     } else {
       return false;
     }
+  }
+  async getServices():Promise<{}[] | null>{
+    let services = await ServiceModel.find();
+
+    return services
   }
 }
 export default adminRepository;
