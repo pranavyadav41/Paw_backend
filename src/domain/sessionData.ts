@@ -1,12 +1,13 @@
 interface SessionData {
-  userData: {
+  userData?: {
+    name:string
     email: string;
-    name: string;
-    password: string;
-    phone: string;
-  } | null;
-  otp: number | null;
-  otpGeneratedAt: number | null;
+    password:string;
+    phone:string
+  };
+  email?:string | null
+  otp?: number | null;
+  otpGeneratedAt?: number | null;
 }
 
 export default SessionData;

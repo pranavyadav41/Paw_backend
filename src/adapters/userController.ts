@@ -29,11 +29,11 @@ class userController {
       }
 
       if (verifyUser.data.status == true) {
-        (req.session as any).userData = req.body;
+        (req.session as SessionData).userData = req.body;
         const otp = this.generateOtp.createOtp();
-        (req.session as any).otp = otp;
+        (req.session as SessionData).otp = otp;
         //for otp expire check
-        (req.session as any).otpGeneratedAt = new Date().getTime();
+        (req.session as SessionData).otpGeneratedAt = new Date().getTime();
         console.log(otp);
         this.generateEmail.sendMail(req.body.email, otp);
         return res.status(verifyUser.status).json(verifyUser.data);
@@ -59,20 +59,20 @@ class userController {
 
       if (req.body.userId !== "" && req.body.otp === (req.session as any).otp) {
         // OTP is valid for user ID
-        (req.session as any).otp = null;
-        (req.session as any).otpGeneratedAt = null;
+        (req.session as SessionData).otp = null;
+        (req.session as SessionData).otpGeneratedAt = null;
         return res.json({
           message: "Verified successfully",
           userId: req.body.userId,
         });
-      } else if (req.body.otp === (req.session as any).otp) {
+      } else if (req.body.otp === (req.session as SessionData).otp) {
         // OTP is valid, but no user ID provided
         const user = await this.userUseCase.verifyOtpUser(
           (req.session as any).userData
         );
         (req.session as any).userData = null;
-        (req.session as any).otp = null;
-        (req.session as any).otpGeneratedAt = null;
+        (req.session as SessionData).otp = null;
+        (req.session as SessionData).otpGeneratedAt = null;
         return res.status(user.status).json(user);
       } else {
         // Invalid OTP
@@ -101,10 +101,10 @@ class userController {
 
       if (user.status == 200) {
         const otp = this.generateOtp.createOtp();
-        (req.session as any).otp = otp;
-        (req.session as any).email = req.body.email;
+        (req.session as SessionData).otp = otp;
+        (req.session as SessionData).email = req.body.email;
         //for otp expire check
-        (req.session as any).otpGeneratedAt = new Date().getTime();
+        (req.session as SessionData).otpGeneratedAt = new Date().getTime();
         this.generateEmail.sendMail(email, otp);
 
         return res.status(user.status).json(user.data);
@@ -132,12 +132,12 @@ class userController {
   async resendOtp(req: Request, res: Response, next: NextFunction) {
     try {
       let newOtp: number = this.generateOtp.createOtp();
-      const email = (req.session as any).userData
+      const email = (req.session as SessionData).userData
         ? (req.session as any).userData.email
         : (req.session as any).email;
       //for otp expire check
-      (req.session as any).otpGeneratedAt = new Date().getTime();
-      (req.session as any).otp = newOtp;
+      (req.session as SessionData).otpGeneratedAt = new Date().getTime();
+      (req.session as SessionData).otp = newOtp;
       this.generateEmail.sendMail(email, newOtp);
       return res.json({ message: "Otp has been sent to your email" });
     } catch (error) {
