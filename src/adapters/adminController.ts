@@ -94,7 +94,7 @@ class adminController {
       );
 
       if (reject.status == 200) {
-        this.SendMail.sendRejection(reject.data.email);
+        this.SendMail.sendRejection(reject.data.email, req.body.reason);
 
         return res.status(reject.status).json({ message: reject.data.message });
       }
@@ -154,7 +154,7 @@ class adminController {
   }
   async editService(req: Request, res: Response, next: NextFunction) {
     try {
-      const edit = await this.AdminUseCase.editService(req.body.service);
+      const edit = await this.AdminUseCase.editService(req.body.updatedService);
 
       if (edit) {
         return res.status(edit.status).json(edit.data.message);

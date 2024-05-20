@@ -7,6 +7,7 @@ import sendOtp from '../services/sendEmail';
 import EncryptPassword from '../services/bcryptPassword';
 import JWTToken from '../services/generateToken';
 import errorHandle from '../middleware/errorHandle';
+import FranchiseRepository from '../repository/Franchise/franchiseRepository';
 
 
 //services
@@ -17,10 +18,12 @@ const encryptPassword=new EncryptPassword()
 const jwtToken=new JWTToken()
 
 //repositories
-const userRepository=new UserRepository() 
+const userRepository=new UserRepository()
+
+
 
 //useCases
-const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken)
+const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken) 
 //controllers
 const userController=new UserController(userCase,generateOtp,generateEmail)
 

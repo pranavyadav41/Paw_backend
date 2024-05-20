@@ -1,6 +1,7 @@
 import adminRepo from "../infrastructure/repository/adminRepository";
 import FranchiseRepo from "./interface/Franchise/franchiseRepo";
 import Service from "../domain/service";
+import updatedService from "../domain/updatedService";
 import franchise from "../domain/franchise";
 
 class adminUseCase {
@@ -196,98 +197,94 @@ class adminUseCase {
       };
     }
   }
-  async addService(service:Service) {
+  async addService(service: Service) {
+    const match = await this.AdminRepo.findService(service.category);
 
-    const match = await this.AdminRepo.findService(service.category)
-
-    if(match){
+    if (match) {
       return {
-        status:400,
-        data:{
-          status:false,
-          message:"Service already exist"
-        }
-      }
+        status: 400,
+        data: {
+          status: false,
+          message: "Service already exist",
+        },
+      };
     }
 
+    const save = await this.AdminRepo.addService(service);
 
-
-    const save = await this.AdminRepo.addService(service)
-
-    if(save){
+    if (save) {
       return {
-        status:200,
-        data:{
-          status:true,
-          message:"Service added successfully"
-        }
-      }
-    }else{
+        status: 200,
+        data: {
+          status: true,
+          message: "Service added successfully",
+        },
+      };
+    } else {
       return {
-        status:400,
-        data:{
-          status:false,
-          message:"Failed please try again"
-        }
-      }
+        status: 400,
+        data: {
+          status: false,
+          message: "Failed please try again",
+        },
+      };
     }
   }
-  async editService(service:Service){
-    const save = await this.AdminRepo.editService(service)
+  async editService(service: updatedService) {
+    const save = await this.AdminRepo.editService(service);
 
-    if(save){
+    if (save) {
       return {
-        status:200,
-        data:{
-          status:true,
-          message:"Data edited successfully"
-        }
-      }
-    }else{
+        status: 200,
+        data: {
+          status: true,
+          message: "Data edited successfully",
+        },
+      };
+    } else {
       return {
-        status:400,
-        data:{
-          status:true,
-          message:"Failed to edit"
-        }
-      }
+        status: 400,
+        data: {
+          status: true,
+          message: "Failed to edit",
+        },
+      };
     }
   }
-  async deleteService(serviceId:string){
-    const deleteService = await this.AdminRepo.deleteService(serviceId)
+  async deleteService(serviceId: string) {
+    const deleteService = await this.AdminRepo.deleteService(serviceId);
 
-    if(deleteService){
+    if (deleteService) {
       return {
-        status:200,
-        data:{
-          status:true,
-          message:"Service deleted successfully"
-        }
-      }
-
-    }else{
+        status: 200,
+        data: {
+          status: true,
+          message: "Service deleted successfully",
+        },
+      };
+    } else {
       return {
-        status:400,
-        data:{
-          status:false,
-          message:"Failed to delete"
-        }
-      }
+        status: 400,
+        data: {
+          status: false,
+          message: "Failed to delete",
+        },
+      };
     }
   }
-  async getServices(){
-    const services = await this.AdminRepo.getServices()
+  async getServices() {
+    const services = await this.AdminRepo.getServices();
 
-    if(services){
+    if (services) {
       return {
-        status:200,
-        data:services
-      }
-    }else{
+        status: 200,
+        data: services,
+      };
+    } else {
       return {
-        status:400,
-        message:"Failed to get data"
-      }
+        status: 400,
+        message: "Failed to get data",
+      };
     }
   }
 }

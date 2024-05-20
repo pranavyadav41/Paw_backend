@@ -28,7 +28,7 @@ class UserRepository implements UserRepo {
     );
 
     return result.modifiedCount>0
-  }
+  } 
 }
 
 export default UserRepository;

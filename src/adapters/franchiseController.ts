@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import FranchiseReqUsecase from "../useCase/Franchise/franchiseReqUsecase";
+import FranchiseUseCase from "../useCase/Franchise/franchiseUsecase";
 
-class FranchiseReq {
+class FranchiseController {
   private franchiseReqUsecase: FranchiseReqUsecase;
-  constructor(franchiseReqUsecase: FranchiseReqUsecase) {
+  private franchiseUsecase: FranchiseUseCase;
+  constructor(
+    franchiseReqUsecase: FranchiseReqUsecase,
+    franchiseUsecase: FranchiseUseCase
+  ) {
     this.franchiseReqUsecase = franchiseReqUsecase;
+    this.franchiseUsecase = franchiseUsecase;
   }
 
   async verifyRequest(req: Request, res: Response, next: NextFunction) {
@@ -23,6 +29,19 @@ class FranchiseReq {
       next(error);
     }
   }
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+
+      const login = await this.franchiseUsecase.login(email, password);
+
+      if (login) {
+        return res.status(login.status).json(login.data);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
-export default FranchiseReq;
+export default FranchiseController;

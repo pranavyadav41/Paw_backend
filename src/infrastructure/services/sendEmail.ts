@@ -47,12 +47,12 @@ class sendOtp implements Nodemailer{
         })
 
     }
-    sendRejection(email: string): void {
+    sendRejection(email: string,reason:string): void {
         const mailOptions :nodemailer.SendMailOptions = {
             from:'akpranavyadav@gmail.com',
             to:email,
             subject:'Your Franchise Request Has Been Rejected',
-            text: `We are pleased to inform you that your request to become a franchisee of our company has been rejected.We appriciate the time and effort from your side.`
+            text: `${reason}`
         }
         this.transporter.sendMail(mailOptions,(err)=>{
             if(err){

@@ -6,6 +6,7 @@ import adminRepo from "../../useCase/interface/adminRepo";
 import franchise from "../../domain/franchise";
 import approve from "../../domain/approval";
 import Service from "../../domain/service";
+import updatedService from "../../domain/updatedService";
 
 class adminRepository implements adminRepo {
   async getUsers(): Promise<{}[] | null> {
@@ -99,21 +100,18 @@ class adminRepository implements adminRepo {
     return unBlock.modifiedCount > 0;
   }
   async findService(category: string): Promise<Service | null> {
-    let match:any = await ServiceModel.findOne({ category: category });
+    let match: any = await ServiceModel.findOne({ category: category });
 
-    if(!match){
-      return null
+    if (!match) {
+      return null;
     }
 
-    const service:Service={
-      category:match.category,
-      services:match.services,
-      price:match.price
-
-    }
-    return service
-
-  
+    const service: Service = {
+      category: match.category,
+      services: match.services,
+      price: match.price,
+    };
+    return service;
   }
   async addService(service: Service): Promise<boolean> {
     let newService = new ServiceModel(service);
@@ -125,11 +123,15 @@ class adminRepository implements adminRepo {
       return false;
     }
   }
-  async editService(service: Service): Promise<boolean> {
+  async editService(service: updatedService): Promise<boolean> {
     let editService = await ServiceModel.updateOne(
-      { _id: service },
+      { _id: service._id },
       {
-        $set: { service },
+        $set: {
+          category: service.category,
+          price: service.price,
+          services: service.services,
+        },
       }
     );
     return editService.modifiedCount > 0;
@@ -143,10 +145,10 @@ class adminRepository implements adminRepo {
       return false;
     }
   }
-  async getServices():Promise<{}[] | null>{
+  async getServices(): Promise<{}[] | null> {
     let services = await ServiceModel.find();
 
-    return services
+    return services;
   }
 }
 export default adminRepository;

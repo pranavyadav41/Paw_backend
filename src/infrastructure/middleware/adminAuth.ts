@@ -30,6 +30,6 @@ export const adminAuth = async (
     next();
   } catch (error: any) {
     console.error("Error decoding token:", error.message);
-    return res.status(401).json({ message: "User not found" });
+    return res.status(401).json({ message: "Not found" });
   }
 };

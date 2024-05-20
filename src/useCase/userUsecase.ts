@@ -56,6 +56,7 @@ class UserUseCase {
     };
   }
   async login(email: string, password: string) {
+
     const user = await this.UserRepository.findByEmail(email);
     let token = "";
 
@@ -131,7 +132,7 @@ class UserUseCase {
         data: {
           status: true,
           message: "Verification otp sent to your Email",
-          userId: userExist._id,
+          userId: userExist._id, 
         },
       };
     } else {

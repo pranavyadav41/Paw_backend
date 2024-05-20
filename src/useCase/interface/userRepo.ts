@@ -7,4 +7,4 @@ interface UserRepo {
     findById(_id:string): Promise<User | null>
 }
 
-export default UserRepo;  
+export default UserRepo;   
