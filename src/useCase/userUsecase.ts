@@ -47,20 +47,35 @@ class UserUseCase {
 
     const userData = await this.UserRepository.save(newUser);
 
+    let data = {
+      _id: userData._id,
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone,
+      isBlocked: userData.isBlocked,
+    };
+
     const token = this.JwtToken.generateToken(userData._id, "user");
 
     return {
       status: 200,
-      data: userData,
+      data: data,
       token,
     };
   }
   async login(email: string, password: string) {
-
     const user = await this.UserRepository.findByEmail(email);
     let token = "";
 
     if (user) {
+      let data = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isBlocked: user.isBlocked,
+      };
+
       if (user.isBlocked) {
         return {
           status: 400,
@@ -84,7 +99,7 @@ class UserUseCase {
           status: 200,
           data: {
             status: true,
-            message: user,
+            message: data,
             token,
             isAdmin: true,
           },
@@ -98,7 +113,7 @@ class UserUseCase {
           status: 200,
           data: {
             status: true,
-            message: user,
+            message: data,
             token,
           },
         };
@@ -132,7 +147,7 @@ class UserUseCase {
         data: {
           status: true,
           message: "Verification otp sent to your Email",
-          userId: userExist._id, 
+          userId: userExist._id,
         },
       };
     } else {
@@ -161,6 +176,51 @@ class UserUseCase {
         status: 400,
         message: "Failed please try again !",
       };
+    }
+  }
+  async getService(Id: string) {
+    const service = await this.UserRepository.getService(Id);
+
+    return {
+      status: 200,
+      data: service,
+    };
+  }
+  async editProfile(
+    Id: string,
+    data: { name: string; email: string; phone: string }
+  ) {
+    const profile = await this.UserRepository.editProfile(Id, data);
+
+    if (profile) {
+      return {
+        status: 200,
+        data: {
+          message: "Profile updated successfully",
+          user: profile,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed to update the data Please try again",
+      };
+    }
+  }
+  async getProfile(Id:string){
+    const profile = await this.UserRepository.findById(Id)
+
+    let data = {
+      _id:profile?._id,
+      name:profile?.name,
+      email:profile?.email,
+      phone:profile?.phone,
+      isBlocked:profile?.isBlocked
+    }
+
+    return {
+      status:200,
+      data:data
     }
   }
 }

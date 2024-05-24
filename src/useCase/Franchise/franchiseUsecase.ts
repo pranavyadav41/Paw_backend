@@ -22,6 +22,17 @@ class franchiseUseCase {
     const franchise = await this.franchiseRepo.findByEmail(email);
 
     if (franchise) {
+      let data = {
+        _id: franchise._id,
+        name: franchise.name,
+        email: franchise.email,
+        phone: franchise.phone,
+        city: franchise.city,
+        district: franchise.district,
+        state: franchise.state,
+        pincode: franchise.pincode,
+      };
+
       if (franchise.isBlocked) {
         return {
           status: 400,
@@ -47,6 +58,15 @@ class franchiseUseCase {
             status: true,
             message: franchise,
             token,
+          },
+        };
+      } else {
+        return {
+          status: 400,
+          data: {
+            status: false,
+            message: "Invalid email or password",
+            token: "",
           },
         };
       }
@@ -80,6 +100,24 @@ class franchiseUseCase {
           status: false,
           message: "Email not registered!",
         },
+      };
+    }
+  }
+  async resetPassword(password: string, userId: string) {
+    const hashedPassword = await this.encryptPassword.encryptPassword(password);
+    const changePassword = await this.franchiseRepo.changePassword(
+      userId,
+      hashedPassword
+    );
+    if (changePassword) {
+      return {
+        status: 200,
+        message: "Password changed successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again !",
       };
     }
   }

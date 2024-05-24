@@ -15,7 +15,7 @@ class userController {
     generateEmail: sendOtp
   ) {
     this.userUseCase = userUseCase;
-    this.generateOtp = generateOtp; 
+    this.generateOtp = generateOtp;
     this.generateEmail = generateEmail;
   }
 
@@ -140,6 +140,41 @@ class userController {
       (req.session as SessionData).otp = newOtp;
       this.generateEmail.sendMail(email, newOtp);
       return res.json({ message: "Otp has been sent to your email" });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getService(req: Request, res: Response, next: NextFunction) {
+    try {
+      let service = await this.userUseCase.getService(req.params.id);
+
+      return res.status(service.status).json(service.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { Id, data } = req.body;
+
+      let profile = await this.userUseCase.editProfile(Id, data);
+
+      if (profile.status == 200) {
+        return res.status(profile.status).json(profile.data);
+      }
+
+      return res.status(profile.status).json(profile.message);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { Id } = req.body;
+
+      let profile = await this.userUseCase.getProfile(Id);
+
+      return res.status(profile.status).json(profile.data);
     } catch (error) {
       next(error);
     }

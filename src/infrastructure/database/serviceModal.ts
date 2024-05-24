@@ -9,11 +9,11 @@ const serviceSchema: Schema = new Schema<Service>({
     services: [
         {
             type: String,
-            required: true
+            required: true 
         }
     ],
     price: {
-        small: {
+        small: { 
             type: String,
             required: true
         },
