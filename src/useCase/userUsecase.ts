@@ -1,23 +1,27 @@
 import User from "../domain/user";
 import UserRepository from "../infrastructure/repository/userRepository";
 import EncryptPassword from "../infrastructure/services/bcryptPassword";
+import addressRepo from "./interface/addressRepo";
 import JWTToken from "../infrastructure/services/generateToken";
+import UserAddress from "../domain/address";
 
 class UserUseCase {
   private UserRepository: UserRepository;
   private EncryptPassword: EncryptPassword;
   private JwtToken: JWTToken;
+  private AddressRepository: addressRepo;
 
   constructor(
     UserRepository: UserRepository,
     encryptPassword: EncryptPassword,
-    jwtToken: JWTToken
+    jwtToken: JWTToken,
+    addressRepo: addressRepo
   ) {
     this.UserRepository = UserRepository;
     this.EncryptPassword = encryptPassword;
     this.JwtToken = jwtToken;
+    this.AddressRepository = addressRepo;
   }
-
   async signup(email: string) {
     const userExist = await this.UserRepository.findByEmail(email);
 
@@ -193,11 +197,21 @@ class UserUseCase {
     const profile = await this.UserRepository.editProfile(Id, data);
 
     if (profile) {
+      const data = await this.UserRepository.findById(Id);
+
+      const profileData = {
+        _id: data?._id,
+        name: data?.name,
+        email: data?.email,
+        phone: data?.phone,
+        isBlocked: data?.isBlocked,
+      };
+
       return {
         status: 200,
         data: {
           message: "Profile updated successfully",
-          user: profile,
+          user: profileData,
         },
       };
     } else {
@@ -207,20 +221,63 @@ class UserUseCase {
       };
     }
   }
-  async getProfile(Id:string){
-    const profile = await this.UserRepository.findById(Id)
+  async getProfile(Id: string) {
+    const profile = await this.UserRepository.findById(Id);
 
     let data = {
-      _id:profile?._id,
-      name:profile?.name,
-      email:profile?.email,
-      phone:profile?.phone,
-      isBlocked:profile?.isBlocked
-    }
+      _id: profile?._id,
+      name: profile?.name,
+      email: profile?.email,
+      phone: profile?.phone,
+      isBlocked: profile?.isBlocked,
+    };
 
     return {
-      status:200,
-      data:data
+      status: 200,
+      data: data,
+    };
+  }
+  async saveAddress(userId: string, address: UserAddress) {
+    const save = await this.AddressRepository.save(address, userId);
+
+    if (save) {
+      return {
+        status: 200,
+        message: "Address added successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Faild,Please try again!",
+      };
+    }
+  }
+  async getAddress(Id: string) {
+    const address = await this.AddressRepository.getAddress(Id);
+
+    if (address) {
+      return {
+        status: 200,
+        data: address,
+      };
+    }
+  }
+  async updatePassword(Id: string, password: string) {
+    const hashedPassword = await this.EncryptPassword.encryptPassword(password);
+    const changePassword = await this.UserRepository.changePassword(
+      Id,
+      hashedPassword
+    );
+    if (changePassword) {
+      return {
+        status: 200,
+        message: "Password changed successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again !",
+      };
     }
   }
 }

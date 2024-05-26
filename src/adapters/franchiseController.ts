@@ -126,6 +126,58 @@ class FranchiseController {
       next(error);
     }
   }
+  async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { Id } = req.body;
+      let profile = await this.franchiseUsecase.getProfile(Id);
+
+      if (profile) {
+        res.status(profile.status).json(profile.data);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { Id, data } = req.body;
+
+      let update = await this.franchiseUsecase.updateProfile(Id, data);
+
+      if (update) {
+        res.status(update.status).json(update.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateAddress(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { Id, address } = req.body;
+
+      const update = await this.franchiseUsecase.updateAddress(Id, address);
+
+      if (update) {
+        res.status(update.status).json(update.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updatePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { Id, password } = req.body;
+
+      const changePassword = await this.franchiseUsecase.updatePassword(
+        Id,
+        password
+      );
+
+      return res.status(changePassword.status).json(changePassword.message);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default FranchiseController;

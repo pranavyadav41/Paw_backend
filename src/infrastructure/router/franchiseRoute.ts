@@ -35,6 +35,10 @@ route.post("/verify",(req,res,next)=>franchiseController.verifyOtp(req,res,next)
 route.post("/verifyEmail",(req,res,next)=>franchiseController.forgotPassword(req,res,next))
 route.post("/resetPassword",(req,res,next)=>franchiseController.resetPassword(req,res,next))
 route.post("/resendOtp",(req,res,next)=>franchiseController.resendOtp(req,res,next))
+route.post("/getProfile",(req,res,next)=>franchiseController.getProfile(req,res,next))
+route.post("/updateProfile",(req,res,next)=>franchiseController.updateProfile(req,res,next))
+route.post("/updateAddress",(req,res,next)=>franchiseController.updateAddress(req,res,next))
+route.post("/updatePassword",(req,res,next)=>franchiseController.updatePassword(req,res,next))
 route.use(errorHandle)
 
 export default route; 

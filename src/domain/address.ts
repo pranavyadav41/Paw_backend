@@ -1,11 +1,16 @@
 import mongoose from "mongoose";
 
-interface address {
+interface Address {
+  name: string;
   city: string;
   district: string;
   state: string;
   pincode: string;
-  userId: mongoose.Schema.Types.ObjectId;
 }
 
-export default address;
+interface UserAddress {
+  userId: mongoose.Types.ObjectId;
+  addresses: Address[];
+}
+
+export default UserAddress;

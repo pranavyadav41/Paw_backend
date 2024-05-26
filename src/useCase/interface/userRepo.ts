@@ -8,6 +8,7 @@ interface UserRepo {
     findById(_id:string): Promise<User | null>
     getService(Id:string):Promise<any>
     editProfile(Id:string,data:{name:string,email:string,phone:string}):Promise<boolean>
+    changePassword(Id:string,password:string):Promise<boolean>
 }
 
-export default UserRepo;   
+export default UserRepo;    
