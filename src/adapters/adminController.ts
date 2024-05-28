@@ -143,8 +143,6 @@ class adminController {
     try {
       const save = await this.AdminUseCase.addService(req.body.service);
 
-      console.log(save);
-
       if (save) {
         return res.status(save.status).json({ message: save.data.message });
       }

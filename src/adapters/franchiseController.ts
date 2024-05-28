@@ -178,6 +178,69 @@ class FranchiseController {
       next(error);
     }
   }
+  async addService(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId, service, time } = req.body;
+
+      const addService = await this.franchiseUsecase.addService(
+        franchiseId,
+        service,
+        time
+      );
+
+      if (addService.status == 401) {
+        return res.status(400).json({ message: "Service already exist" });
+      }
+
+      return res.status(addService.status).json(addService.message);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async deleteService(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId, serviceId } = req.body;
+
+      const deleteService = await this.franchiseUsecase.deleteService(
+        franchiseId,
+        serviceId
+      );
+
+      return res.status(deleteService.status).json(deleteService.message);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async setTime(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId, openingTime, closingTime } = req.body;
+
+      const setTime = await this.franchiseUsecase.setTime(
+        franchiseId,
+        openingTime,
+        closingTime
+      );
+
+      return res.status(setTime.status).json(setTime.message);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async editTime(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { franchiseId, serviceId, hours, minutes } = req.body;
+      const edit = await this.franchiseUsecase.editTime(
+        franchiseId,
+        serviceId,
+        hours,
+        minutes
+      );
+
+      return res.status(edit.status).json(edit.message);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default FranchiseController;

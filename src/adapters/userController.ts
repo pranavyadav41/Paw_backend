@@ -216,6 +216,31 @@ class userController {
       next(error);
     }
   }
+  async editAddress(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log(req.body)
+      let { Id, addressId, address } = req.body;
+      const edit = await this.userUseCase.editAddress(Id, addressId,address);
+      if (edit) {
+        return res.status(edit.status).json(edit.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async deleteAddress(req: Request, res: Response, next: NextFunction) {
+    try {
+      console.log(req.body)
+      let { Id, addressId } = req.body;
+
+      const deleted = await this.userUseCase.deleteAddress(Id, addressId);
+      if (deleted) {
+        return res.status(deleted.status).json(deleted.message);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default userController;

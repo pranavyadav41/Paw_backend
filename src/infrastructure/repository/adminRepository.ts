@@ -53,9 +53,11 @@ class adminRepository implements adminRepo {
         password: data.password,
         phone: data.phone,
         district: data.district,
+        area:data.area,
         city: data.city,
         pincode: data.pincode,
         state: data.state,
+        location:data.location
       };
       return detail;
     }

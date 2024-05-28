@@ -43,6 +43,8 @@ route.post('/getProfile',(req,res,next)=>userController.getProfile(req,res,next)
 route.post('/addAddress',(req,res,next)=>userController.addAddress(req,res,next))
 route.post('/getAddress',(req,res,next)=>userController.getAddress(req,res,next))
 route.post('/changePassword',(req,res,next)=>userController.updatePassword(req,res,next))
+route.post('/editAddress',(req,res,next)=>userController.editAddress(req,res,next))
+route.post('/deleteAddress',(req,res,next)=>userController.deleteAddress(req,res,next))
 
 route.use(errorHandle)
 

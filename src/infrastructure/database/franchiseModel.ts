@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema, Document } from "mongoose";
-import Frachise from "../../domain/franchise";
+import Franchise from "../../domain/franchise"; // Assuming Franchise interface or type is defined here
 
-const franchisSchema: Schema = new Schema<Frachise | Document>({
+const franchiseSchema: Schema<any & Document> = new Schema({
   name: {
     type: String,
     required: true,
@@ -19,6 +19,10 @@ const franchisSchema: Schema = new Schema<Frachise | Document>({
     type: String,
     required: true,
   },
+  area: {
+    type: String,
+    required: false,
+  },
   district: {
     type: String,
     required: true,
@@ -35,14 +39,61 @@ const franchisSchema: Schema = new Schema<Frachise | Document>({
     type: String,
     required: true,
   },
-  isBlocked:{
-    type:Boolean,
-    default:false
-  }
+  location: {
+    type: {
+      type: String,
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  openingTime: {
+    type: String,
+    default: "09:00",
+    required: true,
+  },
+  closingTime: {
+    type: String,
+    default: "17:00",
+    required: true,
+  },
+  services: {
+    type: [
+      {
+        serviceName: {
+          type: String,
+          required: true,
+        },
+        serviceId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Service", // Assuming the Service model is defined elsewhere
+          required: true,
+        },
+        timeToComplete: {
+          hours: {
+            type: Number,
+            required: true,
+          },
+          minutes: {
+            type: Number,
+            required: true,
+          },
+        },
+      },
+    ],
+    default: [],
+  },
 });
 
-const FranchiseModel: Model<Frachise & Document> = mongoose.model<
-  Frachise & Document
->("Franchise", franchisSchema);
+const FranchiseModel: Model<Franchise & Document> = mongoose.model<Franchise & Document>(
+  "Franchise",
+  franchiseSchema
+);
 
 export default FranchiseModel;

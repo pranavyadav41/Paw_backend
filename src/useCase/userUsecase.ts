@@ -280,6 +280,56 @@ class UserUseCase {
       };
     }
   }
+  async editAddress(
+    Id: string,
+    addressId: string,
+    address: {
+      name: string;
+      houseName: string;
+      street: string;
+      city: string;
+      district: string;
+      state: string;
+      pincode: string;
+    }
+  ) {
+    console.log(address,"this is")
+    const edit = await this.AddressRepository.editAddress(
+      Id,
+      addressId,
+      address
+    );
+
+    if (edit) {
+      return {
+        status: 200,
+        message: "Address updated successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again !",
+      };
+    }
+  }
+  async deleteAddress(Id: string, addressId: string) {
+    const deleteAddress = await this.AddressRepository.deleteAddress(
+      Id,
+      addressId
+    );
+
+    if (deleteAddress) {
+      return {
+        status: 200,
+        message: "Address deleted successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again !",
+      };
+    }
+  }
 }
 
 export default UserUseCase;

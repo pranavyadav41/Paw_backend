@@ -4,6 +4,7 @@ import UserAddress from "../../domain/address";
 const addressSchema: Schema = new Schema({
   name: { type: String, required: true },
   houseName:{type:String,required:true},
+  street:{type:String,required:true},
   city: { type: String, required: true },
   district: { type: String, required: true },
   state: { type: String, required: true },

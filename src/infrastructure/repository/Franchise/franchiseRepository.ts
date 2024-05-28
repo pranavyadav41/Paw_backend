@@ -54,6 +54,90 @@ class franchiseRepository implements FranchiseRepo {
 
     return result.modifiedCount > 0;
   }
+  async isExist(franchiseId: string, serviceId: string): Promise<boolean> {
+    const franchise = await FranchiseModel.findOne({
+      _id: franchiseId,
+      services: { $elemMatch: { serviceId } },
+    });
+
+    return franchise !== null;
+  }
+  async addService(
+    franchiseId: string,
+    service: { serviceId: string; serviceName: string },
+    time: { hours: number; minutes: number }
+  ): Promise<boolean> {
+    const serviceId = service.serviceId;
+    const serviceName = service.serviceName;
+    const hours = time.hours;
+    const minutes = time.minutes;
+
+    const update = await FranchiseModel.updateOne(
+      { _id: franchiseId },
+      {
+        $addToSet: {
+          services: {
+            serviceId,
+            serviceName,
+            timeToComplete: {
+              hours: hours,
+              minutes: minutes,
+            },
+          },
+        },
+      }
+    );
+
+    return update.modifiedCount > 0;
+  }
+  async deleteService(
+    franchiseId: string,
+    serviceId: string
+  ): Promise<boolean> {
+    const update = await FranchiseModel.updateOne(
+      { _id: franchiseId },
+      { $pull: { services: { serviceId } } }
+    );
+    return update.modifiedCount > 0;
+  }
+  async setTime(
+    franchiseId: string,
+    openingTime: string,
+    closingTime: string
+  ): Promise<boolean> {
+    const update = await FranchiseModel.updateOne(
+      { _id: franchiseId },
+      {
+        $set: {
+          openingTime,
+          closingTime,
+        },
+      }
+    );
+
+    return update.modifiedCount > 0;
+  }
+  async editTime(
+    franchiseId: string,
+    serviceId: string,
+    hours: number,
+    minutes: number
+  ): Promise<boolean> {
+    const update = await FranchiseModel.updateOne(
+      {
+        _id: franchiseId,
+        "services.serviceId": serviceId,
+      },
+      {
+        $set: {
+          "services.$.timeToComplete.hours": hours,
+          "services.$.timeToComplete.minutes": minutes,
+        },
+      }
+    );
+
+    return update.modifiedCount > 0;
+  }
 }
 
 export default franchiseRepository;
