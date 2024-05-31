@@ -148,32 +148,15 @@ class franchiseUseCase {
   }
   async updateProfile(
     Id: string,
-    data: { name: string; phone: string; email: string }
+    data: { name: string; phone: string; email: string },
+    address:{city:string,area:string,district:string,state:string,pincode:string,longitude:number,latitude:number}
   ) {
-    const update = await this.franchiseRepo.updateProfile(Id, data);
+    const update = await this.franchiseRepo.updateProfile(Id, data,address);
 
     if (update) {
       return {
         status: 200,
         message: "Profile updated successfully",
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Failed to update,please try again!",
-      };
-    }
-  }
-  async updateAddress(
-    Id: string,
-    address: { city: string; district: string; state: string; pincode: string }
-  ) {
-    const update = await this.franchiseRepo.updateAddress(Id, address);
-
-    if (update) {
-      return {
-        status: 200,
-        message: "Address updated successfully",
       };
     } else {
       return {

@@ -37,5 +37,5 @@ route.post('/deleteService',adminAuth,(req,res,next)=>adminController.deleteServ
 route.get('/getServices',(req,res,next)=>adminController.getServices(req,res,next))
 
 route.use(errorHandle)
-
+ 
 export default route

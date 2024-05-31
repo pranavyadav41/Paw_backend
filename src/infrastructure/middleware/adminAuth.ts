@@ -1,6 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { Error } from "mongoose";
 
 export const adminAuth = async (
   req: Request,

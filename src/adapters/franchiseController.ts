@@ -140,22 +140,9 @@ class FranchiseController {
   }
   async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      let { Id, data } = req.body;
+      let { Id, data,address } = req.body;
 
-      let update = await this.franchiseUsecase.updateProfile(Id, data);
-
-      if (update) {
-        res.status(update.status).json(update.message);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-  async updateAddress(req: Request, res: Response, next: NextFunction) {
-    try {
-      let { Id, address } = req.body;
-
-      const update = await this.franchiseUsecase.updateAddress(Id, address);
+      let update = await this.franchiseUsecase.updateProfile(Id, data,address);
 
       if (update) {
         res.status(update.status).json(update.message);

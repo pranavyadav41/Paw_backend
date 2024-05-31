@@ -1,9 +1,9 @@
 import { Request,Response,NextFunction } from "express"
 import jwt,{JwtPayload } from "jsonwebtoken"
-import UserModel from "../database/userModel"
+import franchiseModel from "../../infrastructure/database/franchiseModel";
 
 
-export const userAuth = async(
+export const franchiseAuth = async(
     req:Request,
     res:Response,
     next:NextFunction
@@ -21,20 +21,20 @@ export const userAuth = async(
     try {
         const decodedToken = jwt.verify(token,process.env.JWT_SECRET_KEY as string) as JwtPayload
 
-        if(decodedToken.role !== "user"){
+        if(decodedToken.role !== "franchise"){
             return res.status(403).json({message:"Unauthorized access"})
         }
 
         const userId = decodedToken.userId
 
-        const user = await UserModel.findById(userId)
+        const user = await franchiseModel.findById(userId)
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Franchise not found" });
           }
       
           if (user.isBlocked) {
-            return res.status(403).json({ message: "User is blocked", accountType: "user" });
+            return res.status(403).json({ message: "Franchise is blocked", accountType: "franchise" });
           }
       
           next();

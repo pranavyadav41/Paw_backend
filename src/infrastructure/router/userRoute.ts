@@ -7,6 +7,7 @@ import GenerateOtp from '../services/generateOtp';
 import sendOtp from '../services/sendEmail';
 import EncryptPassword from '../services/bcryptPassword';
 import JWTToken from '../services/generateToken';
+import { userAuth } from '../middleware/userAuth';
 import errorHandle from '../middleware/errorHandle';
 
 
@@ -38,17 +39,17 @@ route.post('/verifyEmail',(req,res,next)=>userController.forgotPassword(req,res,
 route.post('/resetPassword',(req,res,next)=>userController.resetPassword(req,res,next))
 route.post('/resendOtp',(req,res,next)=>userController.resendOtp(req,res,next))
 route.get('/service/:id',(req,res,next)=>userController.getService(req,res,next))
-route.post('/editProfile',(req,res,next)=>userController.updateProfile(req,res,next))
-route.post('/getProfile',(req,res,next)=>userController.getProfile(req,res,next))
-route.post('/addAddress',(req,res,next)=>userController.addAddress(req,res,next))
-route.post('/getAddress',(req,res,next)=>userController.getAddress(req,res,next))
-route.post('/changePassword',(req,res,next)=>userController.updatePassword(req,res,next))
-route.post('/editAddress',(req,res,next)=>userController.editAddress(req,res,next))
-route.post('/deleteAddress',(req,res,next)=>userController.deleteAddress(req,res,next))
+route.post('/editProfile',userAuth,(req,res,next)=>userController.updateProfile(req,res,next))
+route.post('/getProfile',userAuth,(req,res,next)=>userController.getProfile(req,res,next))
+route.post('/addAddress',userAuth,(req,res,next)=>userController.addAddress(req,res,next))
+route.post('/getAddress',userAuth,(req,res,next)=>userController.getAddress(req,res,next))
+route.post('/changePassword',userAuth,(req,res,next)=>userController.updatePassword(req,res,next))
+route.post('/editAddress',userAuth,(req,res,next)=>userController.editAddress(req,res,next))
+route.post('/deleteAddress',userAuth,(req,res,next)=>userController.deleteAddress(req,res,next))
 
 route.use(errorHandle)
 
-
+ 
 
 
 

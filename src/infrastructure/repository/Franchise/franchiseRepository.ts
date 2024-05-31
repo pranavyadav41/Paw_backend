@@ -27,31 +27,28 @@ class franchiseRepository implements FranchiseRepo {
   }
   async updateProfile(
     Id: string,
-    data: { name: string; phone: string; email: string }
-  ): Promise<boolean> {
-    const result = await FranchiseModel.updateOne(
-      { _id: Id },
-      { $set: { name: data.name, email: data.email, phone: data.phone } }
-    );
-
-    return result.modifiedCount > 0;
-  }
-  async updateAddress(
-    Id: string,
-    address: { city: string; state: string; district: string; pincode: string }
+    data: { name: string; phone: string; email: string },
+    address:{city:string,area:string,district:string,state:string,pincode:string,longitude:number,latitude:number}
   ): Promise<boolean> {
     const result = await FranchiseModel.updateOne(
       { _id: Id },
       {
         $set: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          area: address.area,
+          district: address.district,
           city: address.city,
-          state: address.state,
-          district: address.state,
           pincode: address.pincode,
+          state: address.state,
+          location: {
+            type: "Point",
+            coordinates: [address.longitude, address.latitude],
+          },
         },
       }
     );
-
     return result.modifiedCount > 0;
   }
   async isExist(franchiseId: string, serviceId: string): Promise<boolean> {
