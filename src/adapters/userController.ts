@@ -28,7 +28,7 @@ class userController {
         return res.status(user.status).json(user);
       }
 
-      if (verifyUser.data.status == true) {
+      if (verifyUser.data.status == true) { 
         (req.session as SessionData).userData = req.body;
         const otp = this.generateOtp.createOtp();
         (req.session as SessionData).otp = otp;
@@ -179,30 +179,7 @@ class userController {
       next(error);
     }
   }
-  async addAddress(req: Request, res: Response, next: NextFunction) {
-    try {
-      let { Id, address } = req.body;
 
-      let save = await this.userUseCase.saveAddress(Id, address);
-
-      return res.status(save.status).json(save.message);
-    } catch (error) {
-      next(error);
-    }
-  }
-  async getAddress(req: Request, res: Response, next: NextFunction) {
-    try {
-      let { Id } = req.body;
-
-      let save = await this.userUseCase.getAddress(Id);
-
-      if (save) {
-        return res.status(save.status).json(save.data);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
   async updatePassword(req: Request, res: Response, next: NextFunction) {
     try {
       let { Id, password } = req.body;
@@ -211,31 +188,6 @@ class userController {
 
       if (update) {
         return res.status(update.status).json(update.message);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-  async editAddress(req: Request, res: Response, next: NextFunction) {
-    try {
-      console.log(req.body)
-      let { Id, addressId, address } = req.body;
-      const edit = await this.userUseCase.editAddress(Id, addressId,address);
-      if (edit) {
-        return res.status(edit.status).json(edit.message);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-  async deleteAddress(req: Request, res: Response, next: NextFunction) {
-    try {
-      console.log(req.body)
-      let { Id, addressId } = req.body;
-
-      const deleted = await this.userUseCase.deleteAddress(Id, addressId);
-      if (deleted) {
-        return res.status(deleted.status).json(deleted.message);
       }
     } catch (error) {
       next(error);

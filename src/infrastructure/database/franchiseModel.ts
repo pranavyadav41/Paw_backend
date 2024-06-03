@@ -42,7 +42,8 @@ const franchiseSchema: Schema<any & Document> = new Schema({
   location: {
     type: {
       type: String,
-      default: "Point",
+      enum: ["Point"],
+      required: true ,
     },
     coordinates: {
       type: [Number],

@@ -10,7 +10,7 @@ const useSchema:Schema = new Schema<User | Document>(
         email:{
             type:String,
             required:true,
-            unique:true
+            unique:true 
         },
         password:{
             type:String,

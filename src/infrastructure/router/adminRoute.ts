@@ -3,6 +3,7 @@ import AdminController from '../../adapters/adminController'
 import AdminUseCase from '../../useCase/adminUsecse'
 import AdminRepository from '../repository/adminRepository'
 import FranchiseRepository from '../repository/Franchise/franchiseRepository'
+import CouponRepository from '../repository/couponRepository'
 import SendMail from '../services/sendEmail'
 import errorHandle from '../middleware/errorHandle'
 import { adminAuth } from '../middleware/adminAuth'
@@ -10,12 +11,13 @@ import { adminAuth } from '../middleware/adminAuth'
 //repository
 const adminRepository = new AdminRepository()
 const franchiseRepository=new FranchiseRepository()
+const couponRepository = new CouponRepository()
 
 //services
 const sendMail=new SendMail()
 
 //useCase
-const adminUsecse=new AdminUseCase(adminRepository,franchiseRepository)
+const adminUsecse=new AdminUseCase(adminRepository,franchiseRepository,couponRepository)
 
 //adminController
 const adminController=new AdminController(adminUsecse,sendMail)
@@ -35,6 +37,10 @@ route.post('/addService',adminAuth,(req,res,next)=>adminController.addService(re
 route.post('/editService',adminAuth,(req,res,next)=>adminController.editService(req,res,next))
 route.post('/deleteService',adminAuth,(req,res,next)=>adminController.deleteService(req,res,next))
 route.get('/getServices',(req,res,next)=>adminController.getServices(req,res,next))
+route.post('/addCoupon',(req,res,next)=>adminController.addCoupon(req,res,next))
+route.get('/getCoupons',(req,res,next)=>adminController.getCoupons(req,res,next))
+route.post('/editCoupon',(req,res,next)=>adminController.editCoupon(req,res,next))
+route.post('/deleteCoupon',(req,res,next)=>adminController.removeCoupon(req,res,next))
 
 route.use(errorHandle)
  

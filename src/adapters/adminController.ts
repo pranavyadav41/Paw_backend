@@ -189,6 +189,49 @@ class adminController {
       next(error);
     }
   }
+  async addCoupon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { coupon } = req.body;
+      const save = await this.AdminUseCase.addCoupon(coupon);
+
+      if (save) {
+        return res.status(save.status).json({ message: save.message });
+      }
+    } catch (error) {}
+  }
+  async getCoupons(req: Request, res: Response, next: NextFunction) {
+    try {
+      const coupons = await this.AdminUseCase.getCoupons();
+
+      if (coupons) {
+        return res.status(coupons.status).json(coupons.data);
+      }
+    } catch (error) {}
+  }
+  async editCoupon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { Id, data } = req.body;
+      const edit = await this.AdminUseCase.editCoupon(Id, data);
+
+      if (edit) {
+        return res.status(edit.status).json({ message: edit.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async removeCoupon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { Id } = req.body;
+      const deleted = await this.AdminUseCase.removeCoupon(Id);
+
+      if (deleted) {
+        return res.status(deleted.status).json({ message: deleted.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default adminController;

@@ -1,26 +1,21 @@
 import User from "../domain/user";
 import UserRepository from "../infrastructure/repository/userRepository";
 import EncryptPassword from "../infrastructure/services/bcryptPassword";
-import addressRepo from "./interface/addressRepo";
 import JWTToken from "../infrastructure/services/generateToken";
-import UserAddress from "../domain/address";
 
 class UserUseCase {
   private UserRepository: UserRepository;
   private EncryptPassword: EncryptPassword;
   private JwtToken: JWTToken;
-  private AddressRepository: addressRepo;
 
   constructor(
     UserRepository: UserRepository,
     encryptPassword: EncryptPassword,
-    jwtToken: JWTToken,
-    addressRepo: addressRepo
+    jwtToken: JWTToken
   ) {
     this.UserRepository = UserRepository;
     this.EncryptPassword = encryptPassword;
     this.JwtToken = jwtToken;
-    this.AddressRepository = addressRepo;
   }
   async signup(email: string) {
     const userExist = await this.UserRepository.findByEmail(email);
@@ -226,7 +221,7 @@ class UserUseCase {
 
     let data = {
       _id: profile?._id,
-      name: profile?.name,
+      name: profile?.name, 
       email: profile?.email,
       phone: profile?.phone,
       isBlocked: profile?.isBlocked,
@@ -237,31 +232,7 @@ class UserUseCase {
       data: data,
     };
   }
-  async saveAddress(userId: string, address: UserAddress) {
-    const save = await this.AddressRepository.save(address, userId);
 
-    if (save) {
-      return {
-        status: 200,
-        message: "Address added successfully",
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Faild,Please try again!",
-      };
-    }
-  }
-  async getAddress(Id: string) {
-    const address = await this.AddressRepository.getAddress(Id);
-
-    if (address) {
-      return {
-        status: 200,
-        data: address,
-      };
-    }
-  }
   async updatePassword(Id: string, password: string) {
     const hashedPassword = await this.EncryptPassword.encryptPassword(password);
     const changePassword = await this.UserRepository.changePassword(
@@ -272,56 +243,6 @@ class UserUseCase {
       return {
         status: 200,
         message: "Password changed successfully",
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Failed please try again !",
-      };
-    }
-  }
-  async editAddress(
-    Id: string,
-    addressId: string,
-    address: {
-      name: string;
-      houseName: string;
-      street: string;
-      city: string;
-      district: string;
-      state: string;
-      pincode: string;
-    }
-  ) {
-    console.log(address,"this is")
-    const edit = await this.AddressRepository.editAddress(
-      Id,
-      addressId,
-      address
-    );
-
-    if (edit) {
-      return {
-        status: 200,
-        message: "Address updated successfully",
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Failed please try again !",
-      };
-    }
-  }
-  async deleteAddress(Id: string, addressId: string) {
-    const deleteAddress = await this.AddressRepository.deleteAddress(
-      Id,
-      addressId
-    );
-
-    if (deleteAddress) {
-      return {
-        status: 200,
-        message: "Address deleted successfully",
       };
     } else {
       return {

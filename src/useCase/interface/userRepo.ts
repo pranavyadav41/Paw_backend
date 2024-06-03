@@ -11,4 +11,4 @@ interface UserRepo {
     changePassword(Id:string,password:string):Promise<boolean>
 }
 
-export default UserRepo;    
+export default UserRepo;     

@@ -1,16 +1,23 @@
 import adminRepo from "../infrastructure/repository/adminRepository";
 import FranchiseRepo from "./interface/Franchise/franchiseRepo";
+import CouponRepo from "../infrastructure/repository/couponRepository";
 import Service from "../domain/service";
 import updatedService from "../domain/updatedService";
-import franchise from "../domain/franchise";
+import Coupon from "../domain/coupon";
 
 class adminUseCase {
   private AdminRepo: adminRepo;
   private franchiseRepo: FranchiseRepo;
+  private couponRepo: CouponRepo;
 
-  constructor(AdminRepo: adminRepo, franchiseRepo: FranchiseRepo) {
+  constructor(
+    AdminRepo: adminRepo,
+    franchiseRepo: FranchiseRepo,
+    couponRepo: CouponRepo
+  ) {
     this.AdminRepo = AdminRepo;
     this.franchiseRepo = franchiseRepo;
+    this.couponRepo = couponRepo;
   }
 
   async getUsers() {
@@ -285,6 +292,68 @@ class adminUseCase {
         status: 400,
         message: "Failed to get data",
       };
+    }
+  }
+  async addCoupon(coupon: Coupon) {
+    const save = await this.couponRepo.save(coupon);
+
+    if (save) {
+      return {
+        status: 200,
+        message: "Coupon added successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed!Please try again",
+      };
+    }
+  }
+  async getCoupons(){
+    const coupons = await this.couponRepo.getCoupons()
+
+    if(coupons){
+      return {
+        status:200,
+        data:coupons
+      }
+    }else{
+      return {
+        status:400,
+        data:{
+          message:"failed to get data"
+        }
+      }
+    }
+  }
+  async editCoupon(Id:string,coupon:Coupon){
+    const edit = await this.couponRepo.editCoupon(Id,coupon)
+
+    if(edit){
+      return {
+        status:200,
+        message:"Coupon updated successfully"
+      }
+    }else{
+      return {
+        status:400,
+        message:"Failed!Please try again"
+      }
+    }
+  }
+  async removeCoupon(Id:string){
+    const deleted = await this.couponRepo.removeCoupon(Id)
+
+    if(deleted){
+      return {
+        status:200,
+        message:"Coupon deleted successfully"
+      }
+    }else{
+      return {
+        status:400,
+        message:"Failed!Please try again"
+      }
     }
   }
 }
