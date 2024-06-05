@@ -2,6 +2,14 @@ import mongoose, { Model, Schema, Document } from "mongoose";
 import Booking from "../../domain/booking";
 
 const bookingSchema: Schema<Booking & Document> = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
   franchiseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Franchise",
@@ -24,6 +32,18 @@ const bookingSchema: Schema<Booking & Document> = new Schema({
     ref: "Service",
     required: true,
   },
+  sizeOfPet: {
+    type: String,
+    required: true,
+  },
+  bookingStatus: {
+    type: String,
+    default: "pending",
+  },
+  totalAmount : {
+    type:String,
+    required:true
+  }
 });
 
 // Create the Booking model

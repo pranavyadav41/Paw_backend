@@ -49,8 +49,11 @@ const bookingRepo=new BookingRepository()
 const bookingUseCase = new BookingUseCase(bookingRepo)
 const bookingController = new BookingController(bookingUseCase)
 
-route.post('/bookingService',(req,res,next)=>bookingController.findNearestFranchise(req,res,next))
-route.post('/confirmBooking',(req,res,next)=>bookingController.confirmBooking(req,res,next))
+route.post('/generateSlots',(req,res,next)=>bookingController.findNearestFranchise(req,res,next))
+route.post('/bookService',(req,res,next)=>bookingController.confirmBooking(req,res,next))
+route.get('/getAllCoupons',(req,res,next)=>bookingController.getAllCoupons(req,res,next))
+route.post('/applyCoupon',(req,res,next)=>bookingController.applyCoupon(req,res,next))
+route.post('/getbookings',(req,res,next)=>bookingController.getBookings(req,res,next))
 
 route.use(errorHandle)
 

@@ -1,6 +1,9 @@
 import bookingRepo from "../../useCase/interface/bookingRepo";
 import FranchiseModel from "../database/franchiseModel";
 import BookingModel from "../database/bookingModel";
+import CouponModel from "../database/couponModel";
+import Coupon from "../../domain/coupon";
+import Booking from "../../domain/booking";
 import mongoose from "mongoose";
 
 class bookingRepository implements bookingRepo {
@@ -21,21 +24,13 @@ class bookingRepository implements bookingRepo {
       },
       "services.serviceId": serviceId,
     });
-
-    if (!nearestFranchise) {
-      console.log("No franchise found within range or with the given service");
-      return null;
-    }
-
-    console.log("Nearest franchise found:", nearestFranchise);
     return nearestFranchise;
   }
+
   async findServiceDuration(
     franchiseId: string,
     serviceId: string
   ): Promise<{ hours: number; minutes: number }> {
-    console.log(franchiseId);
-
     const result = await FranchiseModel.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(franchiseId) } },
       { $unwind: "$services" },
@@ -52,13 +47,13 @@ class bookingRepository implements bookingRepo {
         },
       },
     ]);
-    console.log(result, "result");
 
     return {
       hours: result[0].hours,
       minutes: result[0].minutes,
     };
   }
+
   async findBookedSlots(franchiseId: string, date: Date): Promise<any> {
     const startDate = new Date(date);
     startDate.setHours(0, 0, 0, 0); // Start of the day
@@ -83,10 +78,20 @@ class bookingRepository implements bookingRepo {
 
     return bookings;
   }
-  async confirmBooking(franchiseId: string, bookingDate: Date, startTime: string, endTime: string, userId: string, address: any, serviceId: string): Promise<any> {
 
-    console.log("its here")
-
+  async confirmBooking(
+    franchiseId: string,
+    bookingDate: Date,
+    startTime: string,
+    endTime: string,
+    userId: string,
+    address: any,
+    serviceId: string,
+    name: string,
+    phone: string,
+    size: string,
+    totalAmount: string
+  ): Promise<string> {
     const newBooking = new BookingModel({
       franchiseId,
       bookingDate,
@@ -95,18 +100,33 @@ class bookingRepository implements bookingRepo {
       userId,
       address,
       serviceId,
+      name,
+      phone,
+      sizeOfPet: size,
+      totalAmount,
     });
 
-    // Save the booking to the database
     const savedBooking = await newBooking.save();
+    return savedBooking._id;
+  }
+  async findAllCoupons(): Promise<Coupon[]> {
+    const coupons = await CouponModel.find();
 
-    console.log(savedBooking,"hello")
+    return coupons;
+  }
+  async applyCoupon(code: string): Promise<{ coupon: any; found: boolean }> {
+    const coupon = await CouponModel.findOne({ code: code });
 
-    // Return the saved booking
-    return savedBooking;
+    if (coupon) {
+      return { coupon: coupon, found: true };
+    }
 
+    return { coupon: "", found: false };
+  }
+  async getBookings(userId: string): Promise<Booking[] | null> {
+    const bookings = await BookingModel.find({ userId: userId });
 
-    
+    return bookings;
   }
 }
 
