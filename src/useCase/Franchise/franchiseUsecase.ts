@@ -169,7 +169,7 @@ class franchiseUseCase {
     const hashedPassword = await this.encryptPassword.encryptPassword(password);
 
     const changePassword = await this.franchiseRepo.changePassword(
-      Id,
+      Id, 
       hashedPassword
     );
     if (changePassword) {
@@ -265,6 +265,59 @@ class franchiseUseCase {
         message:"Failed to update"
       }
     }
+  }
+  async getBookings(franchiseId: string) {
+    let bookings = await this.franchiseRepo.getBookings(franchiseId);
+
+    if (bookings) {
+      return {
+        status: 200,
+        data: bookings,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async getBooking(bookingId: string) {
+    let booking = await this.franchiseRepo.getBooking(bookingId);
+
+    if (booking) {
+      return {
+        status: 200,
+        data: booking,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async changeStatus(bookingId:string,status:string) {
+    let change = await this.franchiseRepo.changeStatus(bookingId,status)
+
+    if(change){
+      return {
+        status:200,
+        message:"updated successfully"
+      }
+    }else{
+      return {
+        status:400,
+        message:"failed,please try again"
+      }
+    }
+  }
+  async getService(Id: string) {
+    const service = await this.franchiseRepo.getService(Id);
+
+    return {
+      status: 200,
+      data: service,
+    };
   }
 }
 

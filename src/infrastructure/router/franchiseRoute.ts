@@ -43,6 +43,11 @@ route.post("/addService",franchiseAuth,(req,res,next)=>franchiseController.addSe
 route.post("/deleteService",franchiseAuth,(req,res,next)=>franchiseController.deleteService(req,res,next));
 route.post("/setTime",franchiseAuth,(req,res,next)=>franchiseController.setTime(req,res,next));
 route.post("/editTime",franchiseAuth,(req,res,next)=>franchiseController.editTime(req,res,next))
+route.post('/getbookings',franchiseAuth,(req,res,next)=>franchiseController.getBookings(req,res,next))
+route.get('/getBooking/:id',franchiseAuth,(req,res,next)=>franchiseController.getBooking(req,res,next))
+route.post('/changeStatus',franchiseAuth,(req,res,next)=>franchiseController.changeStatus(req,res,next))
+route.post('/getService',franchiseAuth,(req,res,next)=>franchiseController.getService(req,res,next))
+
 route.use(errorHandle)
 
 export default route; 

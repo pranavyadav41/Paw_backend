@@ -38,18 +38,16 @@ const bookingSchema: Schema<Booking & Document> = new Schema({
   },
   bookingStatus: {
     type: String,
-    default: "pending",
+    default: "Pending",
   },
-  totalAmount : {
-    type:String,
-    required:true
-  }
+  totalAmount: {
+    type: String,
+    required: true,
+  },
 });
 
-// Create the Booking model
 const BookingModel: Model<Booking & Document> = mongoose.model<
   Booking & Document
 >("Booking", bookingSchema);
 
-// Export the Booking model
 export default BookingModel;

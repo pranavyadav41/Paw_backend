@@ -5,6 +5,9 @@ import CouponModel from "../database/couponModel";
 import Coupon from "../../domain/coupon";
 import Booking from "../../domain/booking";
 import mongoose from "mongoose";
+import franchise from "../../domain/franchise";
+import UserModel from "../database/userModel";
+import User from "../../domain/user";
 
 class bookingRepository implements bookingRepo {
   async findNearestFranchise(
@@ -65,6 +68,7 @@ class bookingRepository implements bookingRepo {
         $match: {
           franchiseId: franchiseId,
           bookingDate: { $gte: startDate, $lt: endDate },
+          bookingStatus: "Pending",
         },
       },
       {
@@ -109,25 +113,7 @@ class bookingRepository implements bookingRepo {
     const savedBooking = await newBooking.save();
     return savedBooking._id;
   }
-  async findAllCoupons(): Promise<Coupon[]> {
-    const coupons = await CouponModel.find();
-
-    return coupons;
-  }
-  async applyCoupon(code: string): Promise<{ coupon: any; found: boolean }> {
-    const coupon = await CouponModel.findOne({ code: code });
-
-    if (coupon) {
-      return { coupon: coupon, found: true };
-    }
-
-    return { coupon: "", found: false };
-  }
-  async getBookings(userId: string): Promise<Booking[] | null> {
-    const bookings = await BookingModel.find({ userId: userId });
-
-    return bookings;
-  }
+  
 }
 
 export default bookingRepository;

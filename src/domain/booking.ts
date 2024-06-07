@@ -11,7 +11,7 @@ interface Booking {
   };
   franchiseId: {
     type: typeof Schema.Types.ObjectId;
-    ref: string;
+    ref: 'Franchise';
     required: true;
   };
   bookingDate: Date;
@@ -19,13 +19,13 @@ interface Booking {
   endTime: string;
   userId: {
     type: typeof Schema.Types.ObjectId;
-    ref: string;
+    ref: 'User';
     required: true;
   };
   address: any;
   serviceId: {
     type: typeof Schema.Types.ObjectId;
-    ref: string;
+    ref: 'Service';
     required: true;
   };
   sizeOfPet: {
@@ -34,7 +34,7 @@ interface Booking {
   };
   bookingStatus: {
     type: string;
-    default: "pending";
+    default: "Pending";
   };
   totalAmount:{
     type:string;

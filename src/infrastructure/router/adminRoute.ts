@@ -37,10 +37,10 @@ route.post('/addService',adminAuth,(req,res,next)=>adminController.addService(re
 route.post('/editService',adminAuth,(req,res,next)=>adminController.editService(req,res,next))
 route.post('/deleteService',adminAuth,(req,res,next)=>adminController.deleteService(req,res,next))
 route.get('/getServices',(req,res,next)=>adminController.getServices(req,res,next))
-route.post('/addCoupon',(req,res,next)=>adminController.addCoupon(req,res,next))
-route.get('/getCoupons',(req,res,next)=>adminController.getCoupons(req,res,next))
-route.post('/editCoupon',(req,res,next)=>adminController.editCoupon(req,res,next))
-route.post('/deleteCoupon',(req,res,next)=>adminController.removeCoupon(req,res,next))
+route.post('/addCoupon',adminAuth,(req,res,next)=>adminController.addCoupon(req,res,next))
+route.get('/getCoupons',adminAuth,(req,res,next)=>adminController.getCoupons(req,res,next))
+route.post('/editCoupon',adminAuth,(req,res,next)=>adminController.editCoupon(req,res,next))
+route.post('/deleteCoupon',adminAuth,(req,res,next)=>adminController.removeCoupon(req,res,next))
 
 route.use(errorHandle)
  

@@ -104,61 +104,7 @@ class BookingUseCase {
       };
     }
   }
-  async getAllCoupons() {
-    let coupons = await this.bookingRepository.findAllCoupons();
-
-    if (coupons) {
-      return {
-        status: 200,
-        data: coupons,
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Failed to fetch!",
-      };
-    }
-  }
-  async applyCoupon(total: string, code: string) {
-    let coupon = await this.bookingRepository.applyCoupon(code);
-
-    if (coupon.found) {
-      let subtotal = parseInt(total);
-      let discount = parseInt(coupon.coupon.discount);
-
-      let finalAmount = subtotal - discount;
-
-      let result = finalAmount.toString();
-
-      return {
-        status: 200,
-        data: {
-          total: result,
-          coupon: coupon.coupon,
-        },
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Invalid coupon code",
-      };
-    }
-  }
-  async getBookings(userId: string) {
-    let bookings = await this.bookingRepository.getBookings(userId);
-
-    if (bookings) {
-      return {
-        status: 200,
-        data: bookings,
-      };
-    } else {
-      return {
-        status: 400,
-        message: "Failed please try again!",
-      };
-    }
-  }
 }
 
 export default BookingUseCase;
+ 

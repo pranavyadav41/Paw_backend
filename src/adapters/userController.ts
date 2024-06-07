@@ -28,7 +28,7 @@ class userController {
         return res.status(user.status).json(user);
       }
 
-      if (verifyUser.data.status == true) { 
+      if (verifyUser.data.status == true) {
         (req.session as SessionData).userData = req.body;
         const otp = this.generateOtp.createOtp();
         (req.session as SessionData).otp = otp;
@@ -192,6 +192,99 @@ class userController {
     } catch (error) {
       next(error);
     }
+  }
+  async getAllCoupons(req: Request, res: Response, next: NextFunction) {
+    try {
+      let coupons = await this.userUseCase.getAllCoupons();
+
+      if (coupons.status == 400) {
+        return res.status(coupons.status).json({ message: coupons.message });
+      } else if (coupons.status == 200) {
+        return res.status(coupons.status).json(coupons.data);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async applyCoupon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { total, couponCode } = req.body;
+      let apply = await this.userUseCase.applyCoupon(total, couponCode);
+
+      if (apply.status == 400) {
+        return res.status(apply.status).json({ message: apply.message });
+      } else if (apply.status == 200) {
+        return res.status(apply.status).json(apply.data);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getBookings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+
+      const bookings = await this.userUseCase.getBookings(userId);
+
+      if (bookings.status == 200) {
+        return res.status(bookings.status).json(bookings.data);
+      } else if (bookings.status == 400) {
+        return res.status(bookings.status).json({ message: bookings.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      let booking = await this.userUseCase.getBooking(req.params.id);
+
+      if (booking.status == 200) {
+        return res.status(booking.status).json(booking.data);
+      } else if (booking.status == 400) {
+        return res.status(booking.status).json({ message: booking.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getFranchise(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { Id } = req.body;
+      let franchise = await this.userUseCase.getFranchise(Id);
+
+      if (franchise.status == 200) {
+        return res.status(franchise.status).json(franchise.data);
+      } else if (franchise.status == 400) {
+        return res
+          .status(franchise.status)
+          .json({ message: franchise.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async checkDate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookId, date } = req.body;
+
+      let check = await this.userUseCase.checkDate(bookId, date);
+
+      return res.status(check.status).json(check.data);
+    } catch (error) {}
+  }
+  async confirmCancel(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookId, userId, amount, isDate } = req.body;
+      let cancel = await this.userUseCase.confirmCancel(
+        bookId,
+        userId,
+        amount,
+        isDate
+      );
+
+      return res.status(cancel.status).json({ message: cancel.message });
+    } catch (error) {}
   }
 }
 

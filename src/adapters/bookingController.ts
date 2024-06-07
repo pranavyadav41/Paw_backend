@@ -67,46 +67,7 @@ class BookingController {
       next(error);
     }
   }
-  async getAllCoupons(req: Request, res: Response, next: NextFunction) {
-    try {
-      let coupons = await this.bookingUseCase.getAllCoupons();
-
-      if (coupons.status == 400) {
-        return res.status(coupons.status).json({ message: coupons.message });
-      } else if (coupons.status == 200) {
-        return res.status(coupons.status).json(coupons.data);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-  async applyCoupon(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { total, couponCode } = req.body;
-      let apply = await this.bookingUseCase.applyCoupon(total, couponCode);
-
-      if (apply.status == 400) {
-        return res.status(apply.status).json({ message: apply.message });
-      } else if (apply.status == 200) {
-        return res.status(apply.status).json(apply.data);
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-  async getBookings(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { userId } = req.body;
-
-      const bookings = await this.bookingUseCase.getBookings(userId);
-
-      if (bookings.status == 200) {
-        return res.status(bookings.status).json(bookings.data);
-      } else if (bookings.status == 400) {
-        return res.status(bookings.status).json({ message: bookings.message });
-      }
-    } catch (error) {}
-  }
 }
 
 export default BookingController;
+ 

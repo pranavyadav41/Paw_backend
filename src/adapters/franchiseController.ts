@@ -140,9 +140,9 @@ class FranchiseController {
   }
   async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      let { Id, data,address } = req.body;
+      let { Id, data, address } = req.body;
 
-      let update = await this.franchiseUsecase.updateProfile(Id, data,address);
+      let update = await this.franchiseUsecase.updateProfile(Id, data, address);
 
       if (update) {
         res.status(update.status).json(update.message);
@@ -226,6 +226,51 @@ class FranchiseController {
       return res.status(edit.status).json(edit.message);
     } catch (error) {
       next(error);
+    }
+  }
+  async getBookings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+
+      const bookings = await this.franchiseUsecase.getBookings(franchiseId);
+
+      if (bookings.status == 200) {
+        return res.status(bookings.status).json(bookings.data);
+      } else if (bookings.status == 400) {
+        return res.status(bookings.status).json({ message: bookings.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      let booking = await this.franchiseUsecase.getBooking(req.params.id);
+
+      if (booking.status == 200) {
+        return res.status(booking.status).json(booking.data);
+      } else if (booking.status == 400) {
+        return res.status(booking.status).json({ message: booking.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async changeStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookingId, status } = req.body;
+      let change = await this.franchiseUsecase.changeStatus(bookingId, status);
+
+      return res.status(change.status).json({ message: change.message });
+    } catch (error) {}
+  }
+  async getService(req: Request, res: Response, next: NextFunction) {
+    try {
+      let service = await this.franchiseUsecase.getService(req.body.Id);
+
+      return res.status(service.status).json(service.data);
+    } catch (error) {
+      next(error); 
     }
   }
 }

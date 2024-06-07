@@ -1,5 +1,7 @@
 import Coupon from "../../domain/coupon";
 import Booking from "../../domain/booking";
+import franchise from "../../domain/franchise";
+import User from "../../domain/user";
 
 interface bookingRepo {
   findNearestFranchise(
@@ -25,9 +27,8 @@ interface bookingRepo {
     size:string,
     totalAmount:string
   ): Promise<any>;
-  findAllCoupons():Promise<Coupon[]>;
-  applyCoupon(code:string):Promise<{coupon:any,found:boolean}>;
-  getBookings(userId:string):Promise<Booking[] | null>;
+  
 }
 
-export default bookingRepo;
+export default bookingRepo; 
+  

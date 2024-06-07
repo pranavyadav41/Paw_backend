@@ -221,7 +221,7 @@ class UserUseCase {
 
     let data = {
       _id: profile?._id,
-      name: profile?.name, 
+      name: profile?.name,
       email: profile?.email,
       phone: profile?.phone,
       isBlocked: profile?.isBlocked,
@@ -249,6 +249,134 @@ class UserUseCase {
         status: 400,
         message: "Failed please try again !",
       };
+    }
+  }
+  async getAllCoupons() {
+    let coupons = await this.UserRepository.findAllCoupons();
+
+    if (coupons) {
+      return {
+        status: 200,
+        data: coupons,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed to fetch!",
+      };
+    }
+  }
+  async applyCoupon(total: string, code: string) {
+    let coupon = await this.UserRepository.applyCoupon(code);
+
+    if (coupon.found) {
+      let subtotal = parseInt(total);
+      let discount = parseInt(coupon.coupon.discount);
+
+      let finalAmount = subtotal - discount;
+
+      let result = finalAmount.toString();
+
+      return {
+        status: 200,
+        data: {
+          total: result,
+          coupon: coupon.coupon,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Invalid coupon code",
+      };
+    }
+  }
+  async getBookings(userId: string) {
+    let bookings = await this.UserRepository.getBookings(userId);
+
+    if (bookings) {
+      return {
+        status: 200,
+        data: bookings,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async getBooking(bookingId: string) {
+    let booking = await this.UserRepository.getBooking(bookingId);
+
+    if (booking) {
+      return {
+        status: 200,
+        data: booking,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async getFranchise(Id: string) {
+    let franchise = await this.UserRepository.getFranchise(Id);
+
+    if (franchise) {
+      return {
+        status: 200,
+        data: franchise,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async checkDate(bookId: string, date: Date) {
+    let check = await this.UserRepository.checkDate(bookId, date);
+
+    if (check) {
+      return {
+        status: 200,
+        data: true,
+      };
+    } else {
+      return {
+        status: 200,
+        data: false,
+      };
+    }
+  }
+  async confirmCancel(
+    bookId: string,
+    userId: string,
+    amount: string,
+    isDate: boolean
+  ) {
+    let total = parseInt(amount);
+
+    if (isDate == true) {
+      total = total * 0.15;
+    }
+
+    let cancel = await this.UserRepository.confirmCancel(bookId)
+
+    let credit = await this.UserRepository.creditWallet(userId,total)
+
+    if(credit){
+      return {
+        status:200,
+        message:"Your refund has been processed and will reflect in your wallet"
+      }
+    }else{
+      return {
+        status:400,
+        message:"Failed please try again!"
+      }
     }
   }
 }

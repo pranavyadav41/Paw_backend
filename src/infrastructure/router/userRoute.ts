@@ -36,6 +36,12 @@ route.get('/service/:id',(req,res,next)=>userController.getService(req,res,next)
 route.post('/editProfile',userAuth,(req,res,next)=>userController.updateProfile(req,res,next))
 route.post('/getProfile',userAuth,(req,res,next)=>userController.getProfile(req,res,next))
 route.post('/changePassword',userAuth,(req,res,next)=>userController.updatePassword(req,res,next))
+route.get('/getAllCoupons',userAuth,(req,res,next)=>userController.getAllCoupons(req,res,next))
+route.post('/applyCoupon',userAuth,(req,res,next)=>userController.applyCoupon(req,res,next))
+route.post('/getbookings',userAuth,(req,res,next)=>userController.getBookings(req,res,next))
+route.get('/getBooking/:id',userAuth,(req,res,next)=>userController.getBooking(req,res,next))
+route.post('/getFranchise',userAuth,(req,res,next)=>userController.getFranchise(req,res,next))
+route.post('/checkDate',userAuth,(req,res,next)=>userController.checkDate(req,res,next))
 
 
 
@@ -49,12 +55,9 @@ const bookingRepo=new BookingRepository()
 const bookingUseCase = new BookingUseCase(bookingRepo)
 const bookingController = new BookingController(bookingUseCase)
 
-route.post('/generateSlots',(req,res,next)=>bookingController.findNearestFranchise(req,res,next))
-route.post('/bookService',(req,res,next)=>bookingController.confirmBooking(req,res,next))
-route.get('/getAllCoupons',(req,res,next)=>bookingController.getAllCoupons(req,res,next))
-route.post('/applyCoupon',(req,res,next)=>bookingController.applyCoupon(req,res,next))
-route.post('/getbookings',(req,res,next)=>bookingController.getBookings(req,res,next))
-
+route.post('/generateSlots',userAuth,(req,res,next)=>bookingController.findNearestFranchise(req,res,next))
+route.post('/bookService',userAuth,(req,res,next)=>bookingController.confirmBooking(req,res,next))
+ 
 route.use(errorHandle)
 
  

@@ -1,6 +1,9 @@
 import franchise from "../../../domain/franchise";
 import FranchiseModel from "../../database/franchiseModel";
 import FranchiseRepo from "../../../useCase/interface/Franchise/franchiseRepo";
+import Booking from "../../../domain/booking";
+import BookingModel from "../../database/bookingModel";
+import ServiceModel from "../../database/serviceModal";
 
 class franchiseRepository implements FranchiseRepo {
   async save(franchise: franchise): Promise<franchise> {
@@ -28,7 +31,15 @@ class franchiseRepository implements FranchiseRepo {
   async updateProfile(
     Id: string,
     data: { name: string; phone: string; email: string },
-    address:{city:string,area:string,district:string,state:string,pincode:string,longitude:number,latitude:number}
+    address: {
+      city: string;
+      area: string;
+      district: string;
+      state: string;
+      pincode: string;
+      longitude: number;
+      latitude: number;
+    }
   ): Promise<boolean> {
     const result = await FranchiseModel.updateOne(
       { _id: Id },
@@ -134,6 +145,28 @@ class franchiseRepository implements FranchiseRepo {
     );
 
     return update.modifiedCount > 0;
+  }
+  async getBookings(franchiseId: string): Promise<Booking[] | null> {
+    const bookings = await BookingModel.find({ franchiseId: franchiseId });
+
+    return bookings;
+  }
+  async getBooking(bookingId: string): Promise<Booking | null> { 
+    const booking = await BookingModel.findOne({ _id: bookingId });
+    return booking;
+  }
+  async changeStatus(bookingId: string, status: string): Promise<boolean> {
+    const change = await BookingModel.updateOne(
+      { _id: bookingId },
+      { $set: { bookingStatus: status } }
+    );
+
+    return change.modifiedCount > 0;
+  }
+  async getService(Id: string): Promise<any> {
+    const service = await ServiceModel.findOne({ _id: Id });
+
+    return service;
   }
 }
 
