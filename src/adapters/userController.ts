@@ -286,6 +286,51 @@ class userController {
       return res.status(cancel.status).json({ message: cancel.message });
     } catch (error) {}
   }
+  async getWallet(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+
+      let wallet = await this.userUseCase.getWallet(userId);
+
+      return res.status(wallet.status).json(wallet.data);
+    } catch (error) {}
+  }
+  async submitFeedback(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { serviceRating, review, serviceId, userId,name } = req.body;
+      const images = req.files as Express.Multer.File[];
+
+      const feedback = await this.userUseCase.submitFeedback(
+        serviceRating,
+        review,
+        serviceId,
+        userId,
+        name,
+        images
+      );
+
+      if (feedback) {
+        return res.status(feedback.status).json({ message: feedback.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getFeedbacks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { serviceId } = req.body;
+
+      let feedbacks = await this.userUseCase.getFeedbacks(serviceId);
+
+      if (feedbacks) {
+        return res.status(feedbacks.status).json(feedbacks.data);
+      } else {
+        return res.status(400).json({ message: "failed please try again" });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default userController;

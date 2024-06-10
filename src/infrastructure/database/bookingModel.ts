@@ -15,7 +15,8 @@ const bookingSchema: Schema<Booking & Document> = new Schema({
     ref: "Franchise",
     required: true,
   },
-  bookingDate: { type: Date, required: true },
+  bookingDate: { type: Date, default: Date.now, required: true },
+  scheduledDate:{type:Date,required:true},
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
   userId: {

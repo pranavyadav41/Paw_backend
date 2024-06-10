@@ -7,7 +7,7 @@ const couponSchema:Schema= new Schema<Coupon | Document>(
             type: String,
             required: true, 
             unique: true 
-        },
+        }, 
         discount: {
             type:String, 
             required: true

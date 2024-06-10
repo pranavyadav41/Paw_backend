@@ -6,6 +6,8 @@ import GenerateOtp from '../services/generateOtp';
 import sendOtp from '../services/sendEmail';
 import EncryptPassword from '../services/bcryptPassword';
 import JWTToken from '../services/generateToken';
+import S3Uploader from '../services/s3Bucket';
+import { upload } from '../middleware/multer';
 import { userAuth } from '../middleware/userAuth';
 import errorHandle from '../middleware/errorHandle';
 
@@ -14,12 +16,13 @@ import errorHandle from '../middleware/errorHandle';
 const generateEmail=new sendOtp()
 const encryptPassword=new EncryptPassword()
 const jwtToken=new JWTToken()
+const s3bucket = new S3Uploader
 
 //repositories
 const userRepository=new UserRepository()
 
 //useCases 
-const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken) 
+const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken,s3bucket) 
 //controllers
 const userController=new UserController(userCase,generateOtp,generateEmail)
 
@@ -42,6 +45,10 @@ route.post('/getbookings',userAuth,(req,res,next)=>userController.getBookings(re
 route.get('/getBooking/:id',userAuth,(req,res,next)=>userController.getBooking(req,res,next))
 route.post('/getFranchise',userAuth,(req,res,next)=>userController.getFranchise(req,res,next))
 route.post('/checkDate',userAuth,(req,res,next)=>userController.checkDate(req,res,next))
+route.post('/confirmCancel',userAuth,(req,res,next)=>userController.confirmCancel(req,res,next))
+route.post('/getWallet',userAuth,(req,res,next)=>userController.getWallet(req,res,next))
+route.post('/submitFeedback',upload.array('images'),userAuth,(req,res,next)=>userController.submitFeedback(req,res,next))
+route.post('/getFeedbacks',userAuth,(req,res,next)=>userController.getFeedbacks(req,res,next))
 
 
 

@@ -6,9 +6,12 @@ import CouponModel from "../database/couponModel";
 import FranchiseModel from "../database/franchiseModel";
 import BookingModel from "../database/bookingModel";
 import WalletModel from "../database/walletModel";
+import FeedbackModel from "../database/feedbackModel";
 import franchise from "../../domain/franchise";
 import Booking from "../../domain/booking";
 import Coupon from "../../domain/coupon";
+import Wallet from "../../domain/wallet";
+import feedback from "../../domain/feedback";
 
 class UserRepository implements UserRepo {
   //saving user details to database
@@ -93,7 +96,7 @@ class UserRepository implements UserRepo {
 
     const booking = await BookingModel.findOne({
       _id: bookId,
-      bookingDate: {
+      scheduledDate: {
         $gte: startOfDay,
         $lt: endOfDay,
       },
@@ -126,6 +129,36 @@ class UserRepository implements UserRepo {
     await wallet.save();
 
     return true;
+  }
+  async getWallet(userId: string): Promise<Wallet | null> {
+    const wallet = await WalletModel.findOne({ userId: userId });
+
+    return wallet;
+  }
+  async submitFeedback(
+    rating: number,
+    feedback: string,
+    images: String[],
+    serviceId: string,
+    userId: string,
+    name: string
+  ): Promise<boolean> {
+    const newFeedback = new FeedbackModel({
+      rating,
+      feedback,
+      images,
+      serviceId,
+      userId,
+      name,
+    });
+    const save = await newFeedback.save();
+
+    return save ? true : false;
+  }
+  async getFeedbacks(serviceId: string): Promise<feedback[] | null> {
+    const feedbacks = await FeedbackModel.find({ serviceId: serviceId });
+
+    return feedbacks;
   }
 }
 

@@ -15,6 +15,7 @@ interface Booking {
     required: true;
   };
   bookingDate: Date;
+  scheduledDate:Date;
   startTime: string;
   endTime: string;
   userId: {

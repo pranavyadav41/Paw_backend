@@ -98,7 +98,7 @@ class bookingRepository implements bookingRepo {
   ): Promise<string> {
     const newBooking = new BookingModel({
       franchiseId,
-      bookingDate,
+      scheduledDate:bookingDate,
       startTime,
       endTime,
       userId,

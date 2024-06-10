@@ -2,20 +2,25 @@ import User from "../domain/user";
 import UserRepository from "../infrastructure/repository/userRepository";
 import EncryptPassword from "../infrastructure/services/bcryptPassword";
 import JWTToken from "../infrastructure/services/generateToken";
+import { IFile } from "../infrastructure/services/s3Bucket";
+import S3Uploader from "../infrastructure/services/s3Bucket";
 
 class UserUseCase {
   private UserRepository: UserRepository;
   private EncryptPassword: EncryptPassword;
   private JwtToken: JWTToken;
+  private s3bucket: S3Uploader;
 
   constructor(
     UserRepository: UserRepository,
     encryptPassword: EncryptPassword,
-    jwtToken: JWTToken
+    jwtToken: JWTToken,
+    s3bucket: S3Uploader
   ) {
     this.UserRepository = UserRepository;
     this.EncryptPassword = encryptPassword;
     this.JwtToken = jwtToken;
+    this.s3bucket = s3bucket;
   }
   async signup(email: string) {
     const userExist = await this.UserRepository.findByEmail(email);
@@ -360,23 +365,92 @@ class UserUseCase {
     let total = parseInt(amount);
 
     if (isDate == true) {
-      total = total * 0.15;
+      total = total - total * 0.15;
     }
 
-    let cancel = await this.UserRepository.confirmCancel(bookId)
+    let cancel = await this.UserRepository.confirmCancel(bookId);
 
-    let credit = await this.UserRepository.creditWallet(userId,total)
+    let credit = await this.UserRepository.creditWallet(userId, total);
 
-    if(credit){
+    if (credit) {
       return {
-        status:200,
-        message:"Your refund has been processed and will reflect in your wallet"
-      }
-    }else{
+        status: 200,
+        message:
+          "Your refund has been processed and will reflect in your wallet",
+      };
+    } else {
       return {
-        status:400,
-        message:"Failed please try again!"
+        status: 400,
+        message: "Failed please try again!",
+      };
+    }
+  }
+  async getWallet(userId: string) {
+    let wallet = await this.UserRepository.getWallet(userId);
+
+    if (wallet) {
+      return {
+        status: 200,
+        data: wallet,
+      };
+    } else {
+      return {
+        status: 200,
+        data: { balance: 0, history: [] },
+      };
+    }
+  }
+  async submitFeedback(
+    serviceRating: number,
+    review: string,
+    serviceId: string,
+    userId: string,
+    name:string,
+    images: IFile[]
+  ) {
+    const upload = await this.s3bucket.uploadImagesToS3(images);
+
+    if (upload) {
+      let save = await this.UserRepository.submitFeedback(
+        serviceRating,
+        review,
+        upload,
+        serviceId,
+        userId,
+        name
+      );
+
+      if (save) {
+        return {
+          status: 200,
+          message: "feedback submitted successfully",
+        };
+      } else {
+        return {
+          status: 400,
+          message: "failed please try again",
+        };
       }
+    }
+  }
+  async getFeedbacks(serviceid: string) {
+    const feedbacks = await this.UserRepository.getFeedbacks(serviceid);
+
+    if(feedbacks){
+      for (let i = 0; i < feedbacks.length; i++) {
+        const feedback = feedbacks[i];
+        const imageNames = feedback.images;
+    
+  
+        const signedUrls = await this.s3bucket.getSignedImageUrls(imageNames);
+    
+        feedback.images = signedUrls;
+      }
+    }
+
+    return {
+      status:200,
+      data:feedbacks
     }
   }
 }
