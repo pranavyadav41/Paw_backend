@@ -66,7 +66,7 @@ class BookingController {
     } catch (error) {
       next(error);
     }
-  }
+  } 
 }
 
 export default BookingController;

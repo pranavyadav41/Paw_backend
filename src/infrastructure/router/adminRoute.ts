@@ -7,7 +7,7 @@ import CouponRepository from '../repository/couponRepository'
 import SendMail from '../services/sendEmail'
 import errorHandle from '../middleware/errorHandle'
 import { adminAuth } from '../middleware/adminAuth'
-
+ 
 //repository
 const adminRepository = new AdminRepository()
 const franchiseRepository=new FranchiseRepository()

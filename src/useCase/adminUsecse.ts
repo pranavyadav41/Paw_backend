@@ -11,7 +11,7 @@ class adminUseCase {
   private couponRepo: CouponRepo;
 
   constructor(
-    AdminRepo: adminRepo,
+    AdminRepo: adminRepo, 
     franchiseRepo: FranchiseRepo,
     couponRepo: CouponRepo
   ) {

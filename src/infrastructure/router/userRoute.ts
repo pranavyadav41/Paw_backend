@@ -52,7 +52,7 @@ route.post('/getFeedbacks',userAuth,(req,res,next)=>userController.getFeedbacks(
 
 
 
-//Booking
+//Booking 
 
 import BookingRepository from '../repository/bookingRepository';
 import BookingUseCase from '../../useCase/bookingUseCase';
