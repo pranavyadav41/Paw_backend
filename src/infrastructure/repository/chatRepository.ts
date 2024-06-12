@@ -1,6 +1,7 @@
 // src/repositories/ChatMessageRepository.ts
 import  IChatMessageRepository  from '../../useCase/interface/chatRepo';
 import ChatMessageModel from '../database/chatModel';
+import UserModel from '../database/userModel';
 import ChatMessage  from '../../domain/chat';
 
 export default class ChatMessageRepository implements IChatMessageRepository {
@@ -19,4 +20,18 @@ export default class ChatMessageRepository implements IChatMessageRepository {
     }).sort('timestamp');
     return messages.map(msg => msg.toObject() as ChatMessage);
   }
+  async getUsers(franchiseId: string): Promise<string[]> {
+      const users = await ChatMessageModel.distinct("sender", {
+        receiver: franchiseId,
+      });
+      return users;
+   
+  }
+  async  getUserName(userId: string): Promise<string | undefined> {
+    const user = await UserModel.findById(userId, 'name').exec();
+
+    return user?.name
+    
+  }
+  
 }

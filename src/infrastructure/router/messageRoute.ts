@@ -18,6 +18,7 @@ const route=express.Router()
 
 route.post('/chat', (req, res,next) => chatController.createChatMessage(req, res,next));
 route.get('/chat/:sender/:receiver', (req, res,next) => chatController.getChatMessages(req, res,next));
+route.post('/getUsers',(req,res,next) =>chatController.getUsers(req,res,next))
 
 
 route.use(errorHandle)
