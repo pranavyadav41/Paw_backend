@@ -160,6 +160,15 @@ class UserRepository implements UserRepo {
 
     return feedbacks;
   }
+  async checkFeedback(userId: string, serviceId: string): Promise<boolean> {
+
+    const result = await FeedbackModel.findOne({userId,serviceId})
+
+    console.log(result,"result")
+
+    return result?true:false
+    
+  }
 }
 
 export default UserRepository;

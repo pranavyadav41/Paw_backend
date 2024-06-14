@@ -23,11 +23,12 @@
       origin: 'http://localhost:3002',
       methods: ['GET', 'POST'],
       credentials: true,
+      optionsSuccessStatus:204
     },
   });
 
-  app.use(express.json())
-  app.use(express.urlencoded({extended:true}))
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   app.use(cookieParser())
 
@@ -65,18 +66,16 @@
     });
 
     socket.on('sendMessage', ({ room, message }) => {
-      const { sender, receiver, message: messageText, timestamp } = message;
-      console.log('Message received:', messageText, room, "room");
-    
-      // Create a new message object with only the necessary data
+      const { sender, receiver, message: messageText, timestamp, fileType, fileName, fileData } = message;
       const newMessage = {
         sender,
         receiver,
-        message: messageText,
-        timestamp
+        content: fileData || messageText,
+        contentType: fileType ? fileType : 'text',
+        timestamp,
+        fileType,
+        fileName,
       };
-    
-      // Broadcast the new message object to the room
       io.to(room).emit('newMessage', newMessage);
     });
     socket.on('disconnect', () => {

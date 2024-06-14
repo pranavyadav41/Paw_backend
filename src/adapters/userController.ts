@@ -297,7 +297,7 @@ class userController {
   }
   async submitFeedback(req: Request, res: Response, next: NextFunction) {
     try {
-      const { serviceRating, review, serviceId, userId,name } = req.body;
+      const { serviceRating, review, serviceId, userId, name } = req.body;
       const images = req.files as Express.Multer.File[];
 
       const feedback = await this.userUseCase.submitFeedback(
@@ -326,6 +326,19 @@ class userController {
         return res.status(feedbacks.status).json(feedbacks.data);
       } else {
         return res.status(400).json({ message: "failed please try again" });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async checkFeedback(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId, serviceId } = req.body;
+
+      let check = await this.userUseCase.checkFeedback(userId, serviceId);
+
+      if (check) {
+        return res.status(check.status).json(check.data);
       }
     } catch (error) {
       next(error);

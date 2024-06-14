@@ -27,6 +27,7 @@ interface UserRepo {
     getWallet(userId:string):Promise<Wallet | null>
     submitFeedback(rating:number,feedback:string,images:String[],service:string,userId:string,name:string):Promise<boolean>
     getFeedbacks(serviceId:string):Promise<feedback[] | null>
+    checkFeedback(userId:string,serviceId:string):Promise<boolean>
 }
 
 export default UserRepo;      

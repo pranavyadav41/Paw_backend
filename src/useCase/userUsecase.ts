@@ -453,6 +453,15 @@ class UserUseCase {
       data:feedbacks
     }
   }
+  async checkFeedback(userId:string,serviceId:string) {
+
+    const check = await this.UserRepository.checkFeedback(userId,serviceId);
+
+    return {
+      status:200,
+      data:check
+    }
+  }
 }
 
 export default UserUseCase;

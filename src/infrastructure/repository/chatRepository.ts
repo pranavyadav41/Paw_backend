@@ -3,12 +3,13 @@ import  IChatMessageRepository  from '../../useCase/interface/chatRepo';
 import ChatMessageModel from '../database/chatModel';
 import UserModel from '../database/userModel';
 import ChatMessage  from '../../domain/chat';
+import { chat } from '../../domain/chat';
 
 export default class ChatMessageRepository implements IChatMessageRepository {
-  async save(chatMessage: ChatMessage): Promise<ChatMessage> {
+  async save(chatMessage: chat): Promise<chat> {
     const chatMessageDoc = new ChatMessageModel(chatMessage);
     await chatMessageDoc.save();
-    return chatMessageDoc.toObject() as ChatMessage;
+    return chatMessageDoc.toObject() as chat;
   }
 
   async findBySenderAndReceiver(sender: string, receiver: string): Promise<ChatMessage[]> {

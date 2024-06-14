@@ -2,6 +2,7 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3
 import { Upload } from '@aws-sdk/lib-storage';
 import { Readable } from 'stream';
 import crypto from 'crypto';
+import * as path from 'path';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
  export interface IFile {
@@ -37,6 +38,7 @@ export default class S3Uploader {
   private generateRandomImageName = (bytes = 32): string => {
     return crypto.randomBytes(bytes).toString('hex');
   }
+  
 
   public uploadImagesToS3 = async (files: IFile[]): Promise<string[]> => {
     const uploadedImageNames: string[] = [];
@@ -80,5 +82,59 @@ export default class S3Uploader {
     }
 
     return signedUrls;
+  }
+
+  private generateRandomFileName(originalName: string): string {
+    const ext = path.extname(originalName);
+    const randomName = crypto.randomBytes(32).toString('hex');
+    return `${randomName}${ext}`;
+  }
+
+  public uploadFile = async (file: any,FileName:any): Promise<string> => {
+    let buffer: Buffer;
+    if (file.buffer instanceof ArrayBuffer) {
+      buffer = Buffer.from(file.buffer);
+    } else if (Buffer.isBuffer(file.buffer)) {
+      buffer = file.buffer;
+    } else {
+      throw new Error('Invalid buffer type');
+    }
+  
+    const stream = Readable.from(buffer);
+    const fileName = this.generateRandomFileName(FileName);
+    const uploader = new Upload({
+      client: this.s3Client,
+      params: { 
+        Bucket: this.bucketName,
+        Key: fileName,
+        Body: stream,
+        ContentType: file.mimetype,
+      },
+    });
+  
+    try {
+      await uploader.done();
+      console.log(`${file.originalname} uploaded successfully as ${fileName}`);
+      return fileName;
+    } catch (error) {
+      console.error(`Error uploading ${file.originalname} to S3:`, error);
+      throw error;
+    }
+  }
+
+  public retrieveFile = async (fileName: string, expiresIn: number = 3600): Promise<string> => {
+    const getObjectParams = {
+      Bucket: this.bucketName,
+      Key: fileName,
+    };
+
+    try {
+      const command = new GetObjectCommand(getObjectParams);
+      const signedUrl = await getSignedUrl(this.s3Client, command, { expiresIn });
+      return signedUrl;
+    } catch (error) {
+      console.error(`Error generating signed URL for file ${fileName}:`, error);
+      throw error;
+    }
   }
 }
