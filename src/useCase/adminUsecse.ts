@@ -11,7 +11,7 @@ class adminUseCase {
   private couponRepo: CouponRepo;
 
   constructor(
-    AdminRepo: adminRepo, 
+    AdminRepo: adminRepo,
     franchiseRepo: FranchiseRepo,
     couponRepo: CouponRepo
   ) {
@@ -309,50 +309,185 @@ class adminUseCase {
       };
     }
   }
-  async getCoupons(){
-    const coupons = await this.couponRepo.getCoupons()
+  async getCoupons() {
+    const coupons = await this.couponRepo.getCoupons();
 
-    if(coupons){
+    if (coupons) {
+      return {
+        status: 200,
+        data: coupons,
+      };
+    } else {
+      return {
+        status: 400,
+        data: {
+          message: "failed to get data",
+        },
+      };
+    }
+  }
+  async editCoupon(Id: string, coupon: Coupon) {
+    const edit = await this.couponRepo.editCoupon(Id, coupon);
+
+    if (edit) {
+      return {
+        status: 200,
+        message: "Coupon updated successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed!Please try again",
+      };
+    }
+  }
+  async removeCoupon(Id: string) {
+    const deleted = await this.couponRepo.removeCoupon(Id);
+
+    if (deleted) {
+      return {
+        status: 200,
+        message: "Coupon deleted successfully",
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed!Please try again",
+      };
+    }
+  }
+  async getWeeklyReport() {
+    let report = await this.AdminRepo.getWeeklyData();
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async getMonthlyReport() {
+    let report = await this.AdminRepo.getMonthlyData();
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async getYearlyReport() {
+    let report = await this.AdminRepo.getYearlyData();
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async getStats() {
+    let totalBooking = await this.AdminRepo.getTotalBookings();
+
+    if (totalBooking) {
+      let totalfranchises = await this.AdminRepo.getFranchisesCount();
+
+      return {
+        status: 200,
+        data: {
+          totalcount: totalBooking,
+          totalfranchises: totalfranchises,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again", 
+      };
+    }
+  }
+  async franchiseWeeklyReport(franchiseId: string) {
+    let report = await this.AdminRepo.franchiseWeeklyData(franchiseId);
+
+    console.log(report,"fra")
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      }; 
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async franchiseMonthlyReport(franchiseId: string) {
+    let report = await this.AdminRepo.franchiseMonthlyData(franchiseId)
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async franchiseYearlyReport(franchiseId: string) {
+    let report = await this.AdminRepo.franchiseYearlyData(franchiseId)
+
+    if (report) { 
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async franchiseStats(franchiseId:string) {
+
+    let totalBooking = await this.AdminRepo.franchiseTotalBooking(franchiseId)
+
+    if(totalBooking){
+      let totalEarning = await this.AdminRepo.franchiseTotalEarning(franchiseId)
+
+      console.log(totalBooking,totalEarning,"this is ")
+
       return {
         status:200,
-        data:coupons
-      }
-    }else{
-      return {
-        status:400,
         data:{
-          message:"failed to get data"
+          totalBooking:totalBooking,
+          totalEarning:totalEarning
         }
       }
-    }
-  }
-  async editCoupon(Id:string,coupon:Coupon){
-    const edit = await this.couponRepo.editCoupon(Id,coupon)
-
-    if(edit){
-      return {
-        status:200,
-        message:"Coupon updated successfully"
-      }
     }else{
       return {
         status:400,
-        message:"Failed!Please try again"
-      }
-    }
-  }
-  async removeCoupon(Id:string){
-    const deleted = await this.couponRepo.removeCoupon(Id)
-
-    if(deleted){
-      return {
-        status:200,
-        message:"Coupon deleted successfully"
-      }
-    }else{
-      return {
-        status:400,
-        message:"Failed!Please try again"
+        message:"Failed please try again!"
       }
     }
   }

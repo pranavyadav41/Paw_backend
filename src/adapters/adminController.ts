@@ -232,6 +232,118 @@ class adminController {
       next(error);
     }
   }
+  async getWeeklyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      let report = await this.AdminUseCase.getWeeklyReport();
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getMonthlyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      let report = await this.AdminUseCase.getMonthlyReport();
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getYearlyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      let report = await this.AdminUseCase.getYearlyReport();
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      let data = await this.AdminUseCase.getStats();
+
+      if (data.status == 200) {
+        return res.status(data.status).json(data.data);
+      } else if (data.status == 400) {
+        return res.status(data.status).json({ message: data.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async franchiseWeeklyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.AdminUseCase.franchiseWeeklyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async franchiseMonthlyReport(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.AdminUseCase.franchiseMonthlyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async franchiseYearlyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.AdminUseCase.franchiseYearlyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async franchiseStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let stats = await this.AdminUseCase.franchiseStats(franchiseId);
+
+      if (stats.status == 200) {
+        return res.status(stats.status).json(stats.data);
+      } else if (stats.status == 400) {
+        return res.status(stats.status).json({ message: stats.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default adminController;

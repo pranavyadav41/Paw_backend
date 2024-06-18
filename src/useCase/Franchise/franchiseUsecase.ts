@@ -121,10 +121,8 @@ class franchiseUseCase {
     }
   }
   async getProfile(Id: string) {
-    const franchise= await this.franchiseRepo.findById(Id);
-  
-    console.log("franchiseProfile", franchise);
-  
+    const franchise = await this.franchiseRepo.findById(Id);
+
     if (franchise) {
       const data = {
         _id: franchise._id,
@@ -138,20 +136,28 @@ class franchiseUseCase {
         pincode: franchise.pincode,
         openingTime: franchise.openingTime,
         closingTime: franchise.closingTime,
-        services: franchise.services
+        services: franchise.services,
       };
       return {
         status: 200,
         data: data,
       };
-    } 
+    }
   }
   async updateProfile(
     Id: string,
     data: { name: string; phone: string; email: string },
-    address:{city:string,area:string,district:string,state:string,pincode:string,longitude:number,latitude:number}
+    address: {
+      city: string;
+      area: string;
+      district: string;
+      state: string;
+      pincode: string;
+      longitude: number;
+      latitude: number;
+    }
   ) {
-    const update = await this.franchiseRepo.updateProfile(Id, data,address);
+    const update = await this.franchiseRepo.updateProfile(Id, data, address);
 
     if (update) {
       return {
@@ -169,7 +175,7 @@ class franchiseUseCase {
     const hashedPassword = await this.encryptPassword.encryptPassword(password);
 
     const changePassword = await this.franchiseRepo.changePassword(
-      Id, 
+      Id,
       hashedPassword
     );
     if (changePassword) {
@@ -251,19 +257,29 @@ class franchiseUseCase {
       };
     }
   }
-  async editTime(franchiseId:string,serviceId:string,hours:number,minutes:number) {
-    const edit = await this.franchiseRepo.editTime(franchiseId,serviceId,hours,minutes)
+  async editTime(
+    franchiseId: string,
+    serviceId: string,
+    hours: number,
+    minutes: number
+  ) {
+    const edit = await this.franchiseRepo.editTime(
+      franchiseId,
+      serviceId,
+      hours,
+      minutes
+    );
 
-    if(edit){
+    if (edit) {
       return {
-        status:200,
-        message:"Updated successfully"
-      }
-    }else{
+        status: 200,
+        message: "Updated successfully",
+      };
+    } else {
       return {
-        status:400,
-        message:"Failed to update"
-      }
+        status: 400,
+        message: "Failed to update",
+      };
     }
   }
   async getBookings(franchiseId: string) {
@@ -296,19 +312,19 @@ class franchiseUseCase {
       };
     }
   }
-  async changeStatus(bookingId:string,status:string) {
-    let change = await this.franchiseRepo.changeStatus(bookingId,status)
+  async changeStatus(bookingId: string, status: string) {
+    let change = await this.franchiseRepo.changeStatus(bookingId, status);
 
-    if(change){
+    if (change) {
       return {
-        status:200,
-        message:"updated successfully"
-      }
-    }else{
+        status: 200,
+        message: "updated successfully",
+      };
+    } else {
       return {
-        status:400,
-        message:"failed,please try again"
-      }
+        status: 400,
+        message: "failed,please try again",
+      };
     }
   }
   async getService(Id: string) {
@@ -318,6 +334,92 @@ class franchiseUseCase {
       status: 200,
       data: service,
     };
+  }
+  async getWeeklyReport(franchiseId: string) {
+    let report = await this.franchiseRepo.getWeeklyData(franchiseId);
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      }; 
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      }; 
+    }
+  }
+  async getMonthlyReport(franchiseId: string) {
+    let report = await this.franchiseRepo.getMonthlyData(franchiseId);
+
+    if (report) {
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async getYearlyReport(franchiseId: string) {
+    let report = await this.franchiseRepo.getYearlyData(franchiseId);
+
+    if (report) { 
+      return {
+        status: 200,
+        data: report,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "failed please try again",
+      };
+    }
+  }
+  async getStatics(franchiseId: string) {
+    const currentDate = new Date();
+
+    let totalcount = await this.franchiseRepo.getTotalBookings(franchiseId);
+
+    if (totalcount) {
+      let appointments = await this.franchiseRepo.getAppointments(
+        franchiseId,
+        currentDate
+      );
+
+      return {
+        status: 200,
+        data: {
+          totalcount: totalcount,
+          appointments: appointments,
+        },
+      };
+    } else {
+      return {
+        status: 400,
+        message: "Failed please try again",
+      };
+    }
+  }
+  async zegoToken(franchiseId: string) {
+
+    const token = await this.franchiseRepo.zegoToken(franchiseId)
+
+    if (token) {
+      return {
+        status: 200,
+        data: token
+      }
+    } else {
+      return {
+        status: 400,
+        message: "please try again"
+      }
+    }
   }
 }
 

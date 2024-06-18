@@ -12,6 +12,7 @@ import Booking from "../../domain/booking";
 import Coupon from "../../domain/coupon";
 import Wallet from "../../domain/wallet";
 import feedback from "../../domain/feedback";
+import jwt from 'jsonwebtoken'
 
 class UserRepository implements UserRepo {
   //saving user details to database
@@ -161,14 +162,26 @@ class UserRepository implements UserRepo {
     return feedbacks;
   }
   async checkFeedback(userId: string, serviceId: string): Promise<boolean> {
+    const result = await FeedbackModel.findOne({ userId, serviceId });
 
-    const result = await FeedbackModel.findOne({userId,serviceId})
+    console.log(result, "result");
 
-    console.log(result,"result")
+    return result ? true : false;
+  }
+  async zegoToken(userId: string): Promise<any> {
 
-    return result?true:false
+    const payload = {
+      app_id: 624915009,
+      user_id: userId,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60),
+    };
+  
+    const token = jwt.sign(payload, "be56a921abafed74dac47dd748a88213");
+
+    return token
     
   }
+  
 }
 
 export default UserRepository;

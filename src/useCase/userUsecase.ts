@@ -405,7 +405,7 @@ class UserUseCase {
     review: string,
     serviceId: string,
     userId: string,
-    name:string,
+    name: string,
     images: IFile[]
   ) {
     const upload = await this.s3bucket.uploadImagesToS3(images);
@@ -436,30 +436,46 @@ class UserUseCase {
   async getFeedbacks(serviceid: string) {
     const feedbacks = await this.UserRepository.getFeedbacks(serviceid);
 
-    if(feedbacks){
+    if (feedbacks) {
       for (let i = 0; i < feedbacks.length; i++) {
         const feedback = feedbacks[i];
         const imageNames = feedback.images;
-    
-  
+
+
         const signedUrls = await this.s3bucket.getSignedImageUrls(imageNames);
-    
+
         feedback.images = signedUrls;
       }
     }
 
     return {
-      status:200,
-      data:feedbacks
+      status: 200,
+      data: feedbacks
     }
   }
-  async checkFeedback(userId:string,serviceId:string) {
+  async checkFeedback(userId: string, serviceId: string) {
 
-    const check = await this.UserRepository.checkFeedback(userId,serviceId);
+    const check = await this.UserRepository.checkFeedback(userId, serviceId);
 
     return {
-      status:200,
-      data:check
+      status: 200,
+      data: check
+    }
+  }
+  async zegoToken(userId: string) {
+
+    const token = await this.UserRepository.zegoToken(userId)
+
+    if (token) {
+      return {
+        status: 200,
+        data: token
+      }
+    } else {
+      return {
+        status: 400,
+        message: "please try again"
+      }
     }
   }
 }

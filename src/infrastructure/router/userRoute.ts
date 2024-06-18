@@ -50,6 +50,7 @@ route.post('/getWallet',userAuth,(req,res,next)=>userController.getWallet(req,re
 route.post('/submitFeedback',upload.array('images'),userAuth,(req,res,next)=>userController.submitFeedback(req,res,next))
 route.post('/getFeedbacks',userAuth,(req,res,next)=>userController.getFeedbacks(req,res,next))
 route.post('/checkFeedback',userAuth,(req,res,next)=>userController.checkFeedback(req,res,next))
+route.post('/zegoToken',userAuth,(req,res,next)=>userController.zegoToken(req,res,next))
 
 
 

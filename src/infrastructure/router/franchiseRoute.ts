@@ -47,6 +47,11 @@ route.post('/getbookings',franchiseAuth,(req,res,next)=>franchiseController.getB
 route.get('/getBooking/:id',franchiseAuth,(req,res,next)=>franchiseController.getBooking(req,res,next))
 route.post('/changeStatus',franchiseAuth,(req,res,next)=>franchiseController.changeStatus(req,res,next))
 route.post('/getService',franchiseAuth,(req,res,next)=>franchiseController.getService(req,res,next))
+route.post('/weeklyReport',franchiseAuth,(req,res,next)=>franchiseController.getWeeklyReport(req,res,next))
+route.post('/monthlyReport',franchiseAuth,(req,res,next)=>franchiseController.getMonthlyReport(req,res,next))
+route.post('/yearlyReport',franchiseAuth,(req,res,next)=>franchiseController.getYearlyReport(req,res,next))
+route.post('/getStats',franchiseAuth,(req,res,next)=>franchiseController.getStats(req,res,next))
+route.post('/zegoToken',franchiseAuth,(req,res,next)=>franchiseController.zegoToken(req,res,next))
 
 route.use(errorHandle)
 

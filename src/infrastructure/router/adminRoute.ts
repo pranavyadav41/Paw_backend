@@ -41,7 +41,15 @@ route.post('/addCoupon',adminAuth,(req,res,next)=>adminController.addCoupon(req,
 route.get('/getCoupons',adminAuth,(req,res,next)=>adminController.getCoupons(req,res,next))
 route.post('/editCoupon',adminAuth,(req,res,next)=>adminController.editCoupon(req,res,next))
 route.post('/deleteCoupon',adminAuth,(req,res,next)=>adminController.removeCoupon(req,res,next))
+route.get('/weeklyReport',adminAuth,(req,res,next)=>adminController.getWeeklyReport(req,res,next))
+route.get('/monthlyReport',adminAuth,(req,res,next)=>adminController.getMonthlyReport(req,res,next))
+route.get('/yearlyReport',adminAuth,(req,res,next)=>adminController.getYearlyReport(req,res,next))
+route.post('/franchiseweeklyReport',adminAuth,(req,res,next)=>adminController.franchiseWeeklyReport(req,res,next))
+route.post('/franchisemonthlyReport',adminAuth,(req,res,next)=>adminController.franchiseMonthlyReport(req,res,next))
+route.post('/franchiseyearlyReport',adminAuth,(req,res,next)=>adminController.franchiseYearlyReport(req,res,next))
+route.get('/getStats',adminAuth,(req,res,next)=>adminController.getStats(req,res,next))
+route.post('/franchiseStats',adminAuth,(req,res,next)=>adminController.franchiseStats(req,res,next))
 
 route.use(errorHandle)
- 
+  
 export default route

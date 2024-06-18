@@ -4,6 +4,8 @@ import FranchiseRepo from "../../../useCase/interface/Franchise/franchiseRepo";
 import Booking from "../../../domain/booking";
 import BookingModel from "../../database/bookingModel";
 import ServiceModel from "../../database/serviceModal";
+import { ObjectId } from 'mongodb';
+import jwt from 'jsonwebtoken'
 
 class franchiseRepository implements FranchiseRepo {
   async save(franchise: franchise): Promise<franchise> {
@@ -151,7 +153,7 @@ class franchiseRepository implements FranchiseRepo {
 
     return bookings;
   }
-  async getBooking(bookingId: string): Promise<Booking | null> { 
+  async getBooking(bookingId: string): Promise<Booking | null> {
     const booking = await BookingModel.findOne({ _id: bookingId });
     return booking;
   }
@@ -168,6 +170,189 @@ class franchiseRepository implements FranchiseRepo {
 
     return service;
   }
+  async getWeeklyData(franchiseId: string): Promise<any> {
+    const getWeekStartDate = (date: Date) => {
+      const dayOfWeek = date.getUTCDay();
+      const diff = date.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+      return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff, 0, 0, 0, 0));
+    };
+
+    const currentDate = new Date();
+    const startOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 0, 1));
+    const endOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
+
+    const weeklyData = [];
+    let currentWeek = startOfYear;
+
+    while (currentWeek <= endOfYear) {
+      const startOfWeek = getWeekStartDate(currentWeek);
+      const endOfWeek = new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
+
+      const matchStage = {
+        franchiseId: new ObjectId(franchiseId),
+        bookingDate: {
+          $gte: startOfWeek,
+          $lte: endOfWeek,
+        },
+      };
+
+      const data = await BookingModel.aggregate([
+        {
+          $match: matchStage,
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$bookingDate" },
+              week: { $isoWeek: "$bookingDate" },
+            },
+            totalBookings: { $sum: 1 },
+            totalEarnings: { $sum: { $toDouble: "$totalAmount" } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: {
+              $concat: [
+                { $toString: "$_id.year" },
+                "-W",
+                { $toString: "$_id.week" },
+              ],
+            },
+            totalBookings: 1,
+            totalEarnings: 1,
+          },
+        },
+      ]);
+
+      weeklyData.push(...data);
+
+      currentWeek.setDate(currentWeek.getDate() + 7);
+    }
+
+    console.log("Weekly data before returning:", weeklyData);
+    return weeklyData;
+  }
+
+async getMonthlyData(franchiseId: string): Promise<any> {
+    const currentDate = new Date();
+    const startOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 0, 1));
+    const endOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
+
+    const monthlyData = await BookingModel.aggregate([
+      {
+        $match: {
+          franchiseId: new ObjectId(franchiseId),
+          bookingDate: {
+            $gte: startOfYear,
+            $lte: endOfYear,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { month: { $month: "$bookingDate" }, year: { $year: "$bookingDate" } },
+          totalBookings: { $sum: 1 },
+          totalEarnings: { $sum: { $toDouble: "$totalAmount" } },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: {
+            $concat: [
+              { $toString: "$_id.year" },
+              "-",
+              { $toString: "$_id.month" },
+            ],
+          },
+          totalBookings: 1,
+          totalEarnings: 1,
+        },
+      },
+    ]);
+
+    console.log("Monthly data before returning:", monthlyData);
+    return monthlyData;
+  }
+
+async getYearlyData(franchiseId: string): Promise<any> {
+    const currentYear = new Date().getUTCFullYear();
+    const startYear = 2022;
+    const endYear = currentYear;
+
+    const yearlyData = await BookingModel.aggregate([
+      {
+        $match: {
+          franchiseId: new ObjectId(franchiseId),
+          bookingDate: {
+            $gte: new Date(Date.UTC(startYear, 0, 1)),
+            $lte: new Date(Date.UTC(endYear, 11, 31, 23, 59, 59, 999)),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $year: "$bookingDate" },
+          totalBookings: { $sum: 1 },
+          totalEarnings: { $sum: { $toDouble: "$totalAmount" } },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: {
+            $toString: "$_id",
+          },
+          totalBookings: 1,
+          totalEarnings: 1,
+        },
+      },
+    ]);
+
+    console.log("Yearly data before returning:", yearlyData);
+    return yearlyData;
+  }
+  async getTotalBookings(franchiseId: string): Promise<number> {
+      const totalBookings = await BookingModel.countDocuments({
+        franchiseId: new ObjectId(franchiseId),
+      });
+      console.log(totalBookings,"total")
+      return totalBookings;
+ 
+  }
+  
+  async getAppointments(franchiseId: string, date: Date): Promise<number> {
+    console.log(date,"date")
+      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+      const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+  
+      const appointments = await BookingModel.countDocuments({
+        franchiseId: new ObjectId(franchiseId),
+        scheduledDate: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+      });
+      return appointments; 
+  
+  }
+  async zegoToken(franchiseId: string): Promise<any> {
+
+    const payload = {
+      app_id: 624915009,
+      user_id: franchiseId,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60),
+    };
+  
+    const token = jwt.sign(payload, "be56a921abafed74dac47dd748a88213");
+
+    return token
+    
+  }
+  
+  
 }
 
 export default franchiseRepository;

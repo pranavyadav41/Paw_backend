@@ -77,7 +77,8 @@ class BookingUseCase {
     name: string,
     phone: string,
     size: string,
-    totalAmount: string
+    totalAmount: string,
+    isWallet: boolean
   ): Promise<any> {
     const booked = await this.bookingRepository.confirmBooking(
       franchiseId,
@@ -93,6 +94,13 @@ class BookingUseCase {
       totalAmount
     );
     if (booked) {
+      if (isWallet == true) {
+        let total = parseInt(totalAmount);
+        let withdraw = await this.bookingRepository.walletWithdraw(
+          userId,
+          total
+        );
+      }
       return {
         status: 200,
         data: booked,
@@ -107,4 +115,3 @@ class BookingUseCase {
 }
 
 export default BookingUseCase;
- 

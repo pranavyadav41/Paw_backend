@@ -27,6 +27,7 @@ interface bookingRepo {
     size:string,
     totalAmount:string
   ): Promise<any>;
+  walletWithdraw(userId:string,amount:number):Promise<boolean>
   
 }
 

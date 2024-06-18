@@ -271,7 +271,7 @@ class userController {
       let check = await this.userUseCase.checkDate(bookId, date);
 
       return res.status(check.status).json(check.data);
-    } catch (error) {}
+    } catch (error) { }
   }
   async confirmCancel(req: Request, res: Response, next: NextFunction) {
     try {
@@ -284,7 +284,7 @@ class userController {
       );
 
       return res.status(cancel.status).json({ message: cancel.message });
-    } catch (error) {}
+    } catch (error) { }
   }
   async getWallet(req: Request, res: Response, next: NextFunction) {
     try {
@@ -293,7 +293,7 @@ class userController {
       let wallet = await this.userUseCase.getWallet(userId);
 
       return res.status(wallet.status).json(wallet.data);
-    } catch (error) {}
+    } catch (error) { }
   }
   async submitFeedback(req: Request, res: Response, next: NextFunction) {
     try {
@@ -342,6 +342,23 @@ class userController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+  async zegoToken(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body
+
+      let token = await this.userUseCase.zegoToken(userId)
+
+      if (token.status == 200) {
+        return res.status(token.status).json(token.data)
+      } else if (token.status == 400) {
+        return res.status(token.status).json(token.message)
+      }
+    } catch (error) {
+
+      next(error)
+
     }
   }
 }

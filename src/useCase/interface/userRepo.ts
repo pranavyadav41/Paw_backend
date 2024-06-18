@@ -28,6 +28,7 @@ interface UserRepo {
     submitFeedback(rating:number,feedback:string,images:String[],service:string,userId:string,name:string):Promise<boolean>
     getFeedbacks(serviceId:string):Promise<feedback[] | null>
     checkFeedback(userId:string,serviceId:string):Promise<boolean>
+    zegoToken(userId:string):Promise<any>
 }
 
 export default UserRepo;      

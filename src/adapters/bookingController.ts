@@ -42,6 +42,7 @@ class BookingController {
         phone,
         size,
         totalAmount,
+        isWallet
       } = req.body;
 
       const booked = await this.bookingUseCase.confirmBooking(
@@ -55,7 +56,8 @@ class BookingController {
         name,
         phone,
         size,
-        totalAmount
+        totalAmount,
+        isWallet
       );
 
       if (booked.status == 400) {

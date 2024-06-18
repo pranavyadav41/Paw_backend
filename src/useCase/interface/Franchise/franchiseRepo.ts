@@ -17,6 +17,12 @@ interface FranchiseRepo {
     getBooking(bookingId:string):Promise<Booking |  null>;
     changeStatus(bookingId:string,status:string):Promise<boolean>
     getService(Id:string):Promise<any>
+    getWeeklyData(franchiseId:string):Promise<any> 
+    getMonthlyData(franchiseId:string):Promise<any>
+    getYearlyData(franchiseId:string):Promise<any>
+    getTotalBookings(franchiseId:string):Promise<number>
+    getAppointments(franchiseId:string,date:Date):Promise<number>
+    zegoToken(franchiseId:string):Promise<number>
 }
 
-export default FranchiseRepo;   
+export default FranchiseRepo;    

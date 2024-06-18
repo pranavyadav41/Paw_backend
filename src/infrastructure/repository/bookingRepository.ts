@@ -1,6 +1,7 @@
 import bookingRepo from "../../useCase/interface/bookingRepo";
 import FranchiseModel from "../database/franchiseModel";
 import BookingModel from "../database/bookingModel";
+import WalletModel from "../database/walletModel";
 import CouponModel from "../database/couponModel";
 import Coupon from "../../domain/coupon";
 import Booking from "../../domain/booking";
@@ -112,6 +113,18 @@ class bookingRepository implements bookingRepo {
 
     const savedBooking = await newBooking.save();
     return savedBooking._id;
+  }
+  async walletWithdraw(userId: string, amount: number): Promise<boolean> {
+    const result = await WalletModel.findOneAndUpdate(
+      { userId: userId, balance: { $gte: amount } },
+      {
+        $inc: { balance: -amount },
+        $push: { history: { date: new Date(), amount: -amount } },
+      },
+      { new: true } 
+    );
+
+    return !!result;
   }
   
 }

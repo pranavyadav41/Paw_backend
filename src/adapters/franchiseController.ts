@@ -270,8 +270,76 @@ class FranchiseController {
 
       return res.status(service.status).json(service.data);
     } catch (error) {
-      next(error); 
+      next(error);
     }
+  }
+  async getWeeklyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.franchiseUsecase.getWeeklyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getMonthlyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.franchiseUsecase.getMonthlyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      } 
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getYearlyReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { franchiseId } = req.body;
+      let report = await this.franchiseUsecase.getYearlyReport(franchiseId);
+
+      if (report.status == 200) {
+        return res.status(report.status).json(report.data);
+      } else {
+        return res.status(report.status).json({ message: report.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getStats(req: Request, res: Response, next: NextFunction) {
+    const { franchiseId } = req.body;
+
+    let data = await this.franchiseUsecase.getStatics(franchiseId);
+
+    if (data.status == 200) {
+      return res.status(data.status).json(data.data);
+    } else if (data.status == 400) {
+      return res.status(data.status).json({ message: data.message });
+    }
+  }
+  async zegoToken(req: Request, res: Response, next: NextFunction) {
+   try {
+    const { franchiseId } = req.body
+
+    let token = await this.franchiseUsecase.zegoToken(franchiseId)
+
+    if (token.status == 200) {
+      return res.status(token.status).json(token.data)
+    } else if (token.status == 400) {
+      return res.status(token.status).json(token.message)
+    }
+   } catch (error) {
+    next(error)
+   }
   }
 }
 

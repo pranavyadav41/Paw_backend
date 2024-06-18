@@ -19,8 +19,18 @@
     editService(service:Service):Promise<boolean>
     deleteService(serviceId:string):Promise<boolean>
     getServices():Promise<{}[] | null>
+    getWeeklyData():Promise<any>
+    getMonthlyData():Promise<any>
+    getYearlyData():Promise<any>
+    getTotalBookings():Promise<number>
+    getFranchisesCount():Promise<number>
+    franchiseWeeklyData(franchiseId:string):Promise<any> 
+    franchiseMonthlyData(franchiseId:string):Promise<any>
+    franchiseYearlyData(franchiseId:string):Promise<any>
+    franchiseTotalBooking(franchiseId:string):Promise<number>
+    franchiseTotalEarning(franchiseId:string):Promise<number>
 
-
+ 
    
    }
 
