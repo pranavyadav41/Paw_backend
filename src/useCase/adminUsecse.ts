@@ -20,18 +20,21 @@ class adminUseCase {
     this.couponRepo = couponRepo;
   }
 
-  async getUsers() {
-    const data = await this.AdminRepo.getUsers();
+  async getUsers(page: number, limit: number, searchTerm: string) {
+    const data = await this.AdminRepo.getUsers(page, limit, searchTerm);
 
     if (data) {
       return {
         status: 200,
-        data: data,
+        data: data.users,
+        total: data.total,
+        page,
+        limit
       };
     } else {
       return {
         status: 400,
-        message: "failed to fetch data!please try again",
+        message: "Failed to fetch data! Please try again",
       };
     }
   }
@@ -147,18 +150,20 @@ class adminUseCase {
       };
     }
   }
-  async getFranchises() {
-    const data = await this.AdminRepo.getFranchises();
-
-    if (data) {
+  async getFranchises(page: number, limit: number, searchTerm: string) {
+    const result = await this.AdminRepo.getFranchises(page, limit, searchTerm);
+    if (result) {
       return {
         status: 200,
-        data: data,
+        data: result.franchises,
+        total: result.total,
+        page,
+        limit
       };
     } else {
       return {
         status: 400,
-        message: "failed to fetch the data!please try again",
+        message: "Failed to fetch the data! Please try again",
       };
     }
   }
@@ -417,20 +422,20 @@ class adminUseCase {
     } else {
       return {
         status: 400,
-        message: "Failed please try again", 
+        message: "Failed please try again",
       };
     }
   }
   async franchiseWeeklyReport(franchiseId: string) {
     let report = await this.AdminRepo.franchiseWeeklyData(franchiseId);
 
-    console.log(report,"fra")
+    console.log(report, "fra")
 
     if (report) {
       return {
         status: 200,
         data: report,
-      }; 
+      };
     } else {
       return {
         status: 400,
@@ -456,7 +461,7 @@ class adminUseCase {
   async franchiseYearlyReport(franchiseId: string) {
     let report = await this.AdminRepo.franchiseYearlyData(franchiseId)
 
-    if (report) { 
+    if (report) {
       return {
         status: 200,
         data: report,
@@ -468,26 +473,26 @@ class adminUseCase {
       };
     }
   }
-  async franchiseStats(franchiseId:string) {
+  async franchiseStats(franchiseId: string) {
 
     let totalBooking = await this.AdminRepo.franchiseTotalBooking(franchiseId)
 
-    if(totalBooking){
+    if (totalBooking) {
       let totalEarning = await this.AdminRepo.franchiseTotalEarning(franchiseId)
 
-      console.log(totalBooking,totalEarning,"this is ")
+      console.log(totalBooking, totalEarning, "this is ")
 
       return {
-        status:200,
-        data:{
-          totalBooking:totalBooking,
-          totalEarning:totalEarning
+        status: 200,
+        data: {
+          totalBooking: totalBooking,
+          totalEarning: totalEarning
         }
       }
-    }else{
+    } else {
       return {
-        status:400,
-        message:"Failed please try again!"
+        status: 400,
+        message: "Failed please try again!"
       }
     }
   }

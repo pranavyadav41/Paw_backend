@@ -296,18 +296,26 @@ class UserUseCase {
       };
     }
   }
-  async getBookings(userId: string) {
-    let bookings = await this.UserRepository.getBookings(userId);
-
-    if (bookings) {
+  async getBookings(userId: string, page: number, limit: number) {
+    const result = await this.UserRepository.getBookings(userId, page, limit);
+    
+    if (result) {
+      const { bookings, total } = result;
+      const totalPages = Math.ceil(total / limit);
+  
       return {
         status: 200,
-        data: bookings,
+        data: { 
+          bookings,
+          currentPage: page,
+          totalPages,
+          totalBookings: total
+        }
       };
     } else {
       return {
         status: 400,
-        message: "Failed please try again!",
+        message: "Failed to fetch bookings. Please try again!"
       };
     }
   }
@@ -462,20 +470,25 @@ class UserUseCase {
       data: check
     }
   }
-  async zegoToken(userId: string) {
+  async homePageData() {
+    const totalUser = await this.UserRepository.totalUsers()
+    if (totalUser) {
+      const totalFranchises = await this.UserRepository.totalFranchises()
+      if (totalFranchises) {
 
-    const token = await this.UserRepository.zegoToken(userId)
+        const totalBookings = await this.UserRepository.totalGroomed()
 
-    if (token) {
-      return {
-        status: 200,
-        data: token
+        return {
+          status:200,
+          data:{
+            totalUsers:totalUser,
+            totalBookings:totalBookings,
+            totalFranchises:totalFranchises
+          }
+        }
+
       }
-    } else {
-      return {
-        status: 400,
-        message: "please try again"
-      }
+
     }
   }
 }

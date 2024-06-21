@@ -88,6 +88,8 @@ class userController {
 
       const user = await this.userUseCase.login(email, password);
 
+      console.log(user, "user")
+
       return res.status(user.status).json(user.data);
     } catch (error) {
       next(error);
@@ -164,7 +166,7 @@ class userController {
       }
 
       return res.status(profile.status).json(profile.message);
-    } catch (error) {
+    } catch (error) { 
       next(error);
     }
   }
@@ -222,14 +224,16 @@ class userController {
   }
   async getBookings(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.body;
-
-      const bookings = await this.userUseCase.getBookings(userId);
-
-      if (bookings.status == 200) {
-        return res.status(bookings.status).json(bookings.data);
-      } else if (bookings.status == 400) {
-        return res.status(bookings.status).json({ message: bookings.message });
+      const { userId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 4;
+  
+      const result = await this.userUseCase.getBookings(userId, page, limit);
+  
+      if (result.status === 200) {
+        return res.status(result.status).json(result.data);
+      } else {
+        return res.status(result.status).json({ message: result.message });
       }
     } catch (error) {
       next(error);
@@ -344,20 +348,17 @@ class userController {
       next(error);
     }
   }
-  async zegoToken(req: Request, res: Response, next: NextFunction) {
+  async homePageData(req: Request, res: Response, next: NextFunction) {
+
     try {
-      const { userId } = req.body
+      let data = await this.userUseCase.homePageData();
 
-      let token = await this.userUseCase.zegoToken(userId)
-
-      if (token.status == 200) {
-        return res.status(token.status).json(token.data)
-      } else if (token.status == 400) {
-        return res.status(token.status).json(token.message)
+      if (data) {
+        return res.status(data.status).json(data.data)
       }
-    } catch (error) {
 
-      next(error)
+    } catch (error) {
+      next(error);
 
     }
   }

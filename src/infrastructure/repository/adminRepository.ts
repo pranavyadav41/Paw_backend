@@ -11,9 +11,26 @@ import updatedService from "../../domain/updatedService";
 import { ObjectId } from "mongodb";
 
 class adminRepository implements adminRepo {
-  async getUsers(): Promise<{}[] | null> {
-    let users = await UserModel.find({ isAdmin: false });
-    return users;
+  async getUsers(page: number, limit: number, searchTerm: string): Promise<{ users: {}[], total: number }> {
+    const skip = (page - 1) * limit;
+
+    const query = searchTerm
+      ? {
+        isAdmin: false, $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { email: { $regex: searchTerm, $options: 'i' } }
+        ]
+      }
+      : { isAdmin: false };
+
+    const users = await UserModel.find(query)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await UserModel.countDocuments(query);
+
+    return { users, total };
   }
   async findByEmail(email: string): Promise<franchise | null> {
     let result = await FranchiseModel.findOne({ email: email });
@@ -83,10 +100,18 @@ class adminRepository implements adminRepo {
       email: " ",
     };
   }
-  async getFranchises(): Promise<{}[] | null> {
-    let franchises = await FranchiseModel.find();
-
-    return franchises;
+  async getFranchises(page: number, limit: number, searchTerm: string): Promise<{ franchises: {}[], total: number }> {
+    const skip = (page - 1) * limit;
+    const query = searchTerm
+      ? { name: { $regex: searchTerm, $options: 'i' } }
+      : {};
+  
+    const [franchises, total] = await Promise.all([
+      FranchiseModel.find(query).skip(skip).limit(limit),
+      FranchiseModel.countDocuments(query)
+    ]);
+  
+    return { franchises, total };
   }
   async blockFranchise(franchiseId: string): Promise<boolean> {
     let block = await FranchiseModel.updateOne(
@@ -487,15 +512,15 @@ class adminRepository implements adminRepo {
     console.log("Yearly data before returning:", yearlyData);
     return yearlyData;
   }
-  async franchiseTotalBooking(franchiseId:string): Promise<number> {
+  async franchiseTotalBooking(franchiseId: string): Promise<number> {
     const count = await BookingModel.countDocuments({
       franchiseId: franchiseId,
       bookingStatus: 'Completed',
     });
     return count;
-    
+
   }
-  async franchiseTotalEarning(franchiseId:string): Promise<number> {
+  async franchiseTotalEarning(franchiseId: string): Promise<number> {
     const bookings = await BookingModel.aggregate([
       { $match: { franchiseId: new ObjectId(franchiseId), bookingStatus: 'Completed' } },
       { $group: { _id: null, totalEarnings: { $sum: { $toDouble: "$totalAmount" } } } }
@@ -506,7 +531,7 @@ class adminRepository implements adminRepo {
     } else {
       return 0;
     }
-    
+
   }
 }
 export default adminRepository;

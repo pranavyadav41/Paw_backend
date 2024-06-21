@@ -18,17 +18,19 @@ interface UserRepo {
     editProfile(Id:string,data:{name:string,email:string,phone:string}):Promise<boolean>
     findAllCoupons():Promise<Coupon[]>;
     applyCoupon(code:string):Promise<{coupon:any,found:boolean}>;
-    getBookings(userId:string):Promise<Booking[] | null>;
+    getBookings(userId:string,page:number,limit:number):Promise<{ bookings: Booking[], total: number } | null>;
     getBooking(bookingId:string):Promise<Booking |  null>;
     getFranchise(Id:string):Promise<franchise | null>;
     checkDate(bookId:string,date:Date):Promise<boolean>
-    confirmCancel(bookId:string):Promise<boolean>;
+    confirmCancel(bookId:string):Promise<boolean>; 
     creditWallet(userId:string,amount:number):Promise<boolean>
     getWallet(userId:string):Promise<Wallet | null>
     submitFeedback(rating:number,feedback:string,images:String[],service:string,userId:string,name:string):Promise<boolean>
     getFeedbacks(serviceId:string):Promise<feedback[] | null>
     checkFeedback(userId:string,serviceId:string):Promise<boolean>
-    zegoToken(userId:string):Promise<any>
+    totalUsers():Promise<number>
+    totalFranchises():Promise<number>
+    totalGroomed():Promise<number>
 }
 
 export default UserRepo;      

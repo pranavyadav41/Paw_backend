@@ -148,10 +148,17 @@ class franchiseRepository implements FranchiseRepo {
 
     return update.modifiedCount > 0;
   }
-  async getBookings(franchiseId: string): Promise<Booking[] | null> {
-    const bookings = await BookingModel.find({ franchiseId: franchiseId });
+  async getBookings(franchiseId: string, page: number, limit: number): Promise<{ bookings: Booking[], total: number } | null> {
+    const startIndex = (page - 1) * limit;
 
-    return bookings;
+    const [bookings, total] = await Promise.all([
+      BookingModel.find({ franchiseId })
+        .sort({ scheduledDate: -1, bookingStatus: 1 })
+        .skip(startIndex)
+        .limit(limit),
+      BookingModel.countDocuments({ franchiseId })
+    ]);
+    return { bookings, total };
   }
   async getBooking(bookingId: string): Promise<Booking | null> {
     const booking = await BookingModel.findOne({ _id: bookingId });
@@ -235,7 +242,7 @@ class franchiseRepository implements FranchiseRepo {
     return weeklyData;
   }
 
-async getMonthlyData(franchiseId: string): Promise<any> {
+  async getMonthlyData(franchiseId: string): Promise<any> {
     const currentDate = new Date();
     const startOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 0, 1));
     const endOfYear = new Date(Date.UTC(currentDate.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
@@ -277,7 +284,7 @@ async getMonthlyData(franchiseId: string): Promise<any> {
     return monthlyData;
   }
 
-async getYearlyData(franchiseId: string): Promise<any> {
+  async getYearlyData(franchiseId: string): Promise<any> {
     const currentYear = new Date().getUTCFullYear();
     const startYear = 2022;
     const endYear = currentYear;
@@ -315,28 +322,28 @@ async getYearlyData(franchiseId: string): Promise<any> {
     return yearlyData;
   }
   async getTotalBookings(franchiseId: string): Promise<number> {
-      const totalBookings = await BookingModel.countDocuments({
-        franchiseId: new ObjectId(franchiseId),
-      });
-      console.log(totalBookings,"total")
-      return totalBookings;
- 
+    const totalBookings = await BookingModel.countDocuments({
+      franchiseId: new ObjectId(franchiseId),
+    });
+    console.log(totalBookings, "total")
+    return totalBookings;
+
   }
-  
+
   async getAppointments(franchiseId: string, date: Date): Promise<number> {
-    console.log(date,"date")
-      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-      const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
-  
-      const appointments = await BookingModel.countDocuments({
-        franchiseId: new ObjectId(franchiseId),
-        scheduledDate: {
-          $gte: startOfDay,
-          $lte: endOfDay,
-        },
-      });
-      return appointments; 
-  
+    console.log(date, "date")
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+
+    const appointments = await BookingModel.countDocuments({
+      franchiseId: new ObjectId(franchiseId),
+      scheduledDate: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
+    });
+    return appointments;
+
   }
   async zegoToken(franchiseId: string): Promise<any> {
 
@@ -345,14 +352,14 @@ async getYearlyData(franchiseId: string): Promise<any> {
       user_id: franchiseId,
       exp: Math.floor(Date.now() / 1000) + (60 * 60),
     };
-  
+
     const token = jwt.sign(payload, "be56a921abafed74dac47dd748a88213");
 
     return token
-    
+
   }
-  
-  
+
+
 }
 
 export default franchiseRepository;

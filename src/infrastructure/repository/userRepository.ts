@@ -71,10 +71,18 @@ class UserRepository implements UserRepo {
 
     return { coupon: "", found: false };
   }
-  async getBookings(userId: string): Promise<Booking[] | null> {
-    const bookings = await BookingModel.find({ userId: userId });
+  async getBookings(userId: string, page: number, limit: number): Promise<{ bookings: Booking[], total: number } | null> {
+    const startIndex = (page - 1) * limit;
 
-    return bookings;
+    const [bookings, total] = await Promise.all([
+      BookingModel.find({ userId })
+        .sort({ scheduledDate: -1, bookingStatus: 1 })
+        .skip(startIndex)
+        .limit(limit),
+      BookingModel.countDocuments({ userId })
+    ]); 
+
+    return { bookings, total };
   }
   async getBooking(bookingId: string): Promise<Booking | null> {
     const booking = await BookingModel.findOne({ _id: bookingId });
@@ -168,20 +176,22 @@ class UserRepository implements UserRepo {
 
     return result ? true : false;
   }
-  async zegoToken(userId: string): Promise<any> {
+  async totalFranchises(): Promise<number> {
+    let count = await FranchiseModel.countDocuments()
+    return count
 
-    const payload = {
-      app_id: 624915009,
-      user_id: userId,
-      exp: Math.floor(Date.now() / 1000) + (60 * 60),
-    };
-  
-    const token = jwt.sign(payload, "be56a921abafed74dac47dd748a88213");
-
-    return token
-    
   }
-  
+  async totalGroomed(): Promise<number> {
+    let count = await BookingModel.countDocuments()
+    return count
+
+  }
+  async totalUsers(): Promise<number> {
+    let count = await UserModel.countDocuments()
+    return count
+
+  }
+
 }
 
 export default UserRepository;

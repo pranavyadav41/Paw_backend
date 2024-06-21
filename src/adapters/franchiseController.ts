@@ -229,10 +229,12 @@ class FranchiseController {
     }
   }
   async getBookings(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { franchiseId } = req.body;
+    try { 
+      const { franchiseId } = req.params
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 4;
 
-      const bookings = await this.franchiseUsecase.getBookings(franchiseId);
+      const bookings = await this.franchiseUsecase.getBookings(franchiseId,page,limit);
 
       if (bookings.status == 200) {
         return res.status(bookings.status).json(bookings.data);
@@ -342,5 +344,5 @@ class FranchiseController {
    }
   }
 }
-
+ 
 export default FranchiseController;

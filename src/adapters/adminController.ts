@@ -14,7 +14,11 @@ class adminController {
 
   async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await this.AdminUseCase.getUsers();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const searchTerm = req.query.search as string || '';
+
+      const users = await this.AdminUseCase.getUsers(page, limit, searchTerm);
 
       if (users.status == 200) {
         return res.status(users.status).json(users);
@@ -104,12 +108,17 @@ class adminController {
   }
   async getFranchises(req: Request, res: Response, next: NextFunction) {
     try {
-      const franchises = await this.AdminUseCase.getFranchises();
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const searchTerm = req.query.search as string || '';
+  
+      const franchises = await this.AdminUseCase.getFranchises(page, limit, searchTerm);
+      
       if (franchises) {
         if (franchises.status == 200) {
-          return res.status(franchises.status).json(franchises.data);
+          return res.status(franchises.status).json(franchises);
         }
-        return res.status(franchises.status).json(franchises.message);
+        return res.status(franchises.status).json({ message: franchises.message });
       }
     } catch (error) {
       next(error);
@@ -197,7 +206,7 @@ class adminController {
       if (save) {
         return res.status(save.status).json({ message: save.message });
       }
-    } catch (error) {}
+    } catch (error) { }
   }
   async getCoupons(req: Request, res: Response, next: NextFunction) {
     try {
@@ -206,7 +215,7 @@ class adminController {
       if (coupons) {
         return res.status(coupons.status).json(coupons.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   }
   async editCoupon(req: Request, res: Response, next: NextFunction) {
     try {

@@ -282,13 +282,20 @@ class franchiseUseCase {
       };
     }
   }
-  async getBookings(franchiseId: string) {
-    let bookings = await this.franchiseRepo.getBookings(franchiseId);
+  async getBookings(franchiseId: string, page: number, limit: number) {
+    let result = await this.franchiseRepo.getBookings(franchiseId, page, limit);
 
-    if (bookings) {
+    if (result) {
+      const { bookings, total } = result
+      const totalPages = Math.ceil(total / limit);
       return {
         status: 200,
-        data: bookings,
+        data: {
+          bookings,
+          currentPage: page,
+          totalPages,
+          totalBookings: total
+        }
       };
     } else {
       return {
@@ -342,12 +349,12 @@ class franchiseUseCase {
       return {
         status: 200,
         data: report,
-      }; 
+      };
     } else {
       return {
         status: 400,
         message: "failed please try again",
-      }; 
+      };
     }
   }
   async getMonthlyReport(franchiseId: string) {
@@ -368,7 +375,7 @@ class franchiseUseCase {
   async getYearlyReport(franchiseId: string) {
     let report = await this.franchiseRepo.getYearlyData(franchiseId);
 
-    if (report) { 
+    if (report) {
       return {
         status: 200,
         data: report,

@@ -25,7 +25,7 @@ export default class ChatMessageRepository implements IChatMessageRepository {
       const users = await ChatMessageModel.distinct("sender", {
         receiver: franchiseId,
       });
-      return users;
+      return users; 
    
   }
   async  getUserName(userId: string): Promise<string | undefined> {

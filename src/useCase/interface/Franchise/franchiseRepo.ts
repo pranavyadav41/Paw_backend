@@ -13,7 +13,7 @@ interface FranchiseRepo {
     deleteService(franchiseId:string,serviceId:string):Promise<boolean>
     setTime(franchiseId:string,openingTime:string,closingTime:string):Promise<boolean>
     editTime(franchiseId:string,serviceId:string,hours:number,minutes:number):Promise<boolean>
-    getBookings(franchiseId:string):Promise<Booking[] | null>;
+    getBookings(franchiseId:string,page:number,limit:number):Promise<{ bookings: Booking[], total: number } | null>;
     getBooking(bookingId:string):Promise<Booking |  null>;
     changeStatus(bookingId:string,status:string):Promise<boolean>
     getService(Id:string):Promise<any>
@@ -25,4 +25,4 @@ interface FranchiseRepo {
     zegoToken(franchiseId:string):Promise<number>
 }
 
-export default FranchiseRepo;    
+export default FranchiseRepo;     

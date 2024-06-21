@@ -30,19 +30,19 @@ export const franchiseAuth = async(
         const user = await franchiseModel.findById(userId)
 
         if (!user) {
-            return res.status(404).json({ message: "Franchise not found" });
+            return res.status(400).json({ message: "Franchise not found" });
           }
       
           if (user.isBlocked) {
-            return res.status(403).json({ message: "Franchise is blocked", accountType: "franchise" });
+            return res.status(400).json({ message: "Franchise is blocked", accountType: "franchise" });
           }
       
           next();
         
     } catch (error:any) {
-
+  
         console.error("Error decoding token:", error.message);
-    return res.status(401).json({ message: "Not found" });
+    return res.status(400).json({ message: "Not found" });
         
     }
 }

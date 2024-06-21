@@ -41,7 +41,7 @@ route.post('/getProfile',userAuth,(req,res,next)=>userController.getProfile(req,
 route.post('/changePassword',userAuth,(req,res,next)=>userController.updatePassword(req,res,next))
 route.get('/getAllCoupons',userAuth,(req,res,next)=>userController.getAllCoupons(req,res,next))
 route.post('/applyCoupon',userAuth,(req,res,next)=>userController.applyCoupon(req,res,next))
-route.post('/getbookings',userAuth,(req,res,next)=>userController.getBookings(req,res,next))
+route.post('/getbookings/:userId',userAuth,(req,res,next)=>userController.getBookings(req,res,next))
 route.get('/getBooking/:id',userAuth,(req,res,next)=>userController.getBooking(req,res,next))
 route.post('/getFranchise',userAuth,(req,res,next)=>userController.getFranchise(req,res,next))
 route.post('/checkDate',userAuth,(req,res,next)=>userController.checkDate(req,res,next))
@@ -50,8 +50,7 @@ route.post('/getWallet',userAuth,(req,res,next)=>userController.getWallet(req,re
 route.post('/submitFeedback',upload.array('images'),userAuth,(req,res,next)=>userController.submitFeedback(req,res,next))
 route.post('/getFeedbacks',userAuth,(req,res,next)=>userController.getFeedbacks(req,res,next))
 route.post('/checkFeedback',userAuth,(req,res,next)=>userController.checkFeedback(req,res,next))
-route.post('/zegoToken',userAuth,(req,res,next)=>userController.zegoToken(req,res,next))
-
+route.get('/homePageData',(req,res,next)=>userController.homePageData(req,res,next))
 
 
 //Booking 
