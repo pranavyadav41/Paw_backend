@@ -85,7 +85,13 @@ io.on('connection', (socket) => {
   socket.on('stopTyping', ({ room, user }) => {
     socket.to(room).emit('stopTyping', { user });
   });
-  
+
+  socket.on('initiateCall', ({ room, from, roomId }) => {
+    console.log(roomId)
+    socket.to(room).emit('incomingCall', { from, roomId })
+
+  })
+
   socket.on('disconnect', () => {
     console.log(`Socket ${socket.id} disconnected`);
   });
