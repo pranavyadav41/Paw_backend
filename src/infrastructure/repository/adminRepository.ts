@@ -100,17 +100,24 @@ class adminRepository implements adminRepo {
       email: " ",
     };
   }
+  async getFranchisesData(): Promise<franchise[]> {
+
+    const data = await FranchiseModel.find()
+
+    return data
+
+  }
   async getFranchises(page: number, limit: number, searchTerm: string): Promise<{ franchises: {}[], total: number }> {
     const skip = (page - 1) * limit;
     const query = searchTerm
       ? { name: { $regex: searchTerm, $options: 'i' } }
       : {};
-  
+
     const [franchises, total] = await Promise.all([
       FranchiseModel.find(query).skip(skip).limit(limit),
       FranchiseModel.countDocuments(query)
     ]);
-  
+
     return { franchises, total };
   }
   async blockFranchise(franchiseId: string): Promise<boolean> {

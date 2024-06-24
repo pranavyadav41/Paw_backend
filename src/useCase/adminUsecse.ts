@@ -150,6 +150,21 @@ class adminUseCase {
       };
     }
   }
+  async getFranchisesData() {
+    const data = await this.AdminRepo.getFranchisesData()
+
+    if (data) {
+      return {
+        status: 200,
+        data: data
+      }
+    } else {
+      return {
+        status: 400,
+        message: "failed to fetch"
+      }
+    }
+  }
   async getFranchises(page: number, limit: number, searchTerm: string) {
     const result = await this.AdminRepo.getFranchises(page, limit, searchTerm);
     if (result) {

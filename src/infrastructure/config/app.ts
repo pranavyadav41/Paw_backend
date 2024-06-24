@@ -38,7 +38,6 @@ app.use(session({
   saveUninitialized: false
 }))
 
-//For allow request from frontend
 app.use(cors({
   origin: 'http://localhost:3002',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -46,11 +45,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 app.use("/api/user", userRoute)
 app.use("/api/admin", adminRoute)
 app.use("/api/franchise", franchiseRoute)
 app.use("/api/messages", messagesRoute)
+
 
 io.on('connection', (socket) => {
   console.log(`Socket ${socket.id} connected`);
@@ -65,7 +64,7 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined room ${room}`);
   });
 
-  socket.on('sendMessage', ({ room, message }) => {
+  socket.on('sendMessage', ({ room, message}) => {
     const { sender, receiver, message: messageText, timestamp, fileType, fileName, fileData } = message;
     const newMessage = {
       sender,
@@ -78,16 +77,8 @@ io.on('connection', (socket) => {
     };
     io.to(room).emit('newMessage', newMessage);
   });
-  socket.on('typing', ({ room, user }) => {
-    socket.to(room).emit('typing', { user });
-  });
-
-  socket.on('stopTyping', ({ room, user }) => {
-    socket.to(room).emit('stopTyping', { user });
-  });
 
   socket.on('initiateCall', ({ room, from, roomId }) => {
-    console.log(roomId)
     socket.to(room).emit('incomingCall', { from, roomId })
 
   })

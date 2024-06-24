@@ -106,6 +106,19 @@ class adminController {
       next(error);
     }
   }
+  async getFranchisesData(req:Request,res:Response,next:NextFunction){
+    try {
+      const data = await this.AdminUseCase.getFranchisesData()
+
+      if(data.status==200){
+        return res.status(data.status).json(data.data)
+      }else if(data.status==400){
+        return res.status(data.status).json(data.message)
+      }
+    } catch (error) {
+      
+    }
+  }
   async getFranchises(req: Request, res: Response, next: NextFunction) {
     try {
       const page = parseInt(req.query.page as string) || 1;

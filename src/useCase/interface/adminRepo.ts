@@ -11,6 +11,7 @@ interface adminRepo {
   approveFranchise(reqId: string): Promise<approve | boolean>
   findByEmail(email: string): Promise<franchise | null>
   rejectFranchise(reqId: string): Promise<{ status: boolean; email: string }>
+  getFranchisesData():Promise<franchise[]>
   getFranchises(page: number, limit: number, searchTerm: string): Promise<{ franchises: {}[], total: number }>
   blockFranchise(franchiseId: string): Promise<boolean>
   unBlockFranchise(franchiseId: string): Promise<boolean>

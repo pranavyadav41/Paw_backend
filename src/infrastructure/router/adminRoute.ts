@@ -30,6 +30,7 @@ route.post('/unBlockUser',adminAuth,(req,res,next)=>adminController.unBlockUser(
 route.get('/getRequests',adminAuth,(req,res,next)=>adminController.getFranchiseRequests(req,res,next))
 route.post('/approveRequest',adminAuth,(req,res,next)=>adminController.approveFranchise(req,res,next))
 route.post('/rejectRequest',adminAuth,(req,res,next)=>adminController.rejectFranchise(req,res,next))
+route.get('/getFranchisesData',adminAuth,(req,res,next)=>adminController.getFranchisesData(req,res,next))
 route.get('/getFranchises',adminAuth,(req,res,next)=>adminController.getFranchises(req,res,next))
 route.post('/blockFranchise',adminAuth,(req,res,next)=>adminController.blockFranchise(req,res,next))
 route.post('/unBlockFranchise',adminAuth,(req,res,next)=>adminController.unBlockFranchise(req,res,next))

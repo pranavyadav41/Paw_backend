@@ -97,4 +97,6 @@ const FranchiseModel: Model<Franchise & Document> = mongoose.model<Franchise & D
   franchiseSchema
 );
 
+franchiseSchema.index({ location: '2dsphere' });
+
 export default FranchiseModel;
