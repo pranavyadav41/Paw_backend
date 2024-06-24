@@ -48,7 +48,7 @@ route.post('/checkDate',userAuth,(req,res,next)=>userController.checkDate(req,re
 route.post('/confirmCancel',userAuth,(req,res,next)=>userController.confirmCancel(req,res,next))
 route.post('/getWallet',userAuth,(req,res,next)=>userController.getWallet(req,res,next))
 route.post('/submitFeedback',upload.array('images'),userAuth,(req,res,next)=>userController.submitFeedback(req,res,next))
-route.post('/getFeedbacks',userAuth,(req,res,next)=>userController.getFeedbacks(req,res,next))
+route.post('/getFeedbacks',(req,res,next)=>userController.getFeedbacks(req,res,next))
 route.post('/checkFeedback',userAuth,(req,res,next)=>userController.checkFeedback(req,res,next))
 route.get('/homePageData',(req,res,next)=>userController.homePageData(req,res,next))
 
