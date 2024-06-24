@@ -20,7 +20,7 @@ const app = express();
 export const httpServer = http.createServer(app)
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: 'http://localhost:3002',
+    origin: process.env.CORS,
     methods: ['GET', 'POST'],
     credentials: true,
     optionsSuccessStatus: 204
@@ -33,13 +33,13 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser())
 
 app.use(session({
-  secret: 'qwertyuiop',
+  secret:'qwertyuiop',
   resave: false,
   saveUninitialized: false
 }))
 
 app.use(cors({
-  origin: 'http://localhost:3002',
+  origin: process.env.CORS,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']

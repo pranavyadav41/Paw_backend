@@ -12,7 +12,7 @@ class sendOtp implements Nodemailer{
                 user:'akpranavyadav@gmail.com',
                 pass:process.env.MAILER,
             },
-        })
+        }) 
     }
 
     sendMail(email:string,otp:number):void{
