@@ -39,7 +39,7 @@ app.use(session({
 }))
 
 app.use(cors({
-  origin:"https://soundmagic.fun/",
+  origin: process.env.CORS,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
