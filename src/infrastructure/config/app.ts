@@ -1,10 +1,12 @@
-import express from 'express';
 import dotenv from "dotenv"
+dotenv.config();
+import express from 'express';
+
 import cookieParser from "cookie-parser"
 import session from 'express-session'
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors'
-dotenv.config();
+
 import http from 'http';
 
 //Routes root
@@ -33,7 +35,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser())
 
 app.use(session({
-  secret:'qwertyuiop',
+  secret: 'qwertyuiop',
   resave: false,
   saveUninitialized: false
 }))
@@ -64,7 +66,7 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined room ${room}`);
   });
 
-  socket.on('sendMessage', ({ room, message}) => {
+  socket.on('sendMessage', ({ room, message }) => {
     const { sender, receiver, message: messageText, timestamp, fileType, fileName, fileData } = message;
     const newMessage = {
       sender,
