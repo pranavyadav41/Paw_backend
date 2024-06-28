@@ -47,38 +47,38 @@ class userController {
     try {
 
       return res.json(req.session)
-      const now = new Date().getTime();
-      const otpGeneratedAt = (req.session as any).otpGeneratedAt;
-      const otpExpiration = 1.5 * 60 * 1000;
+      // const now = new Date().getTime();
+      // const otpGeneratedAt = (req.session as any).otpGeneratedAt;
+      // const otpExpiration = 1.5 * 60 * 1000;
 
-      if (now - otpGeneratedAt > otpExpiration) {
-        // OTP has expired
-        return res
-          .status(400)
-          .json({ status: false, message: "OTP has expired" });
-      }
+      // if (now - otpGeneratedAt > otpExpiration) {
+      //   // OTP has expired
+      //   return res
+      //     .status(400)
+      //     .json({ status: false, message: "OTP has expired" });
+      // }
 
-      if (req.body.userId !== "" && req.body.otp === (req.session as any).otp) {
-        // OTP is valid for user ID
-        (req.session as SessionData).otp = null;
-        (req.session as SessionData).otpGeneratedAt = null;
-        return res.status(200).json({
-          message: "Verified successfully",
-          userId: req.body.userId,
-        });
-      } else if (req.body.otp === (req.session as SessionData).otp) {
-        // OTP is valid, but no user ID provided
-        const user = await this.userUseCase.verifyOtpUser(
-          (req.session as any).userData
-        );
-        (req.session as any).userData = null;
-        (req.session as SessionData).otp = null;
-        (req.session as SessionData).otpGeneratedAt = null;
-        return res.status(user.status).json(user);
-      } else {
-        // Invalid OTP
-        return res.status(400).json({ status: false, message: "Invalid OTP" });
-      }
+      // if (req.body.userId !== "" && req.body.otp === (req.session as any).otp) {
+      //   // OTP is valid for user ID
+      //   (req.session as SessionData).otp = null;
+      //   (req.session as SessionData).otpGeneratedAt = null;
+      //   return res.status(200).json({
+      //     message: "Verified successfully",
+      //     userId: req.body.userId,
+      //   });
+      // } else if (req.body.otp === (req.session as SessionData).otp) {
+      //   // OTP is valid, but no user ID provided
+      //   const user = await this.userUseCase.verifyOtpUser(
+      //     (req.session as any).userData
+      //   );
+      //   (req.session as any).userData = null;
+      //   (req.session as SessionData).otp = null;
+      //   (req.session as SessionData).otpGeneratedAt = null;
+      //   return res.status(user.status).json(user);
+      // } else {
+      //   // Invalid OTP
+      //   return res.status(400).json({ status: false, message: "Invalid OTP" });
+      // }
     } catch (error) {
       next(error);
     }
