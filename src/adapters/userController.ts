@@ -61,7 +61,7 @@ class userController {
         // OTP is valid for user ID
         (req.session as SessionData).otp = null;
         (req.session as SessionData).otpGeneratedAt = null;
-        return res.json({
+        return res.status(200).json({
           message: "Verified successfully",
           userId: req.body.userId,
         });
@@ -166,7 +166,7 @@ class userController {
       }
 
       return res.status(profile.status).json(profile.message);
-    } catch (error) { 
+    } catch (error) {
       next(error);
     }
   }
@@ -227,9 +227,9 @@ class userController {
       const { userId } = req.params;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 4;
-  
+
       const result = await this.userUseCase.getBookings(userId, page, limit);
-  
+
       if (result.status === 200) {
         return res.status(result.status).json(result.data);
       } else {
@@ -359,6 +359,19 @@ class userController {
 
     } catch (error) {
       next(error);
+
+    }
+  }
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      req.session.destroy(err => {
+        if (err) {
+          return res.status(400).json({ message: 'Failed to log out' });
+        }
+        res.status(200).json({ message: 'Logged out successfully' });
+      });
+    } catch (error) {
+      next(error)
 
     }
   }
