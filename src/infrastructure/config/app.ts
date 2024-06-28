@@ -4,10 +4,14 @@ import express from 'express';
 
 import cookieParser from "cookie-parser"
 import session from 'express-session'
+import RedisStore from 'connect-redis';
+import { createClient } from 'redis';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors'
-
 import http from 'http';
+
+const redisClient = createClient({ legacyMode: true });
+redisClient.connect().catch(console.error);
 
 //Routes root
 import userRoute from '../router/userRoute'
@@ -34,11 +38,15 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(cookieParser())
 
-app.use(session({
-  secret: 'qwertyuiop',
-  resave: false,
-  saveUninitialized: false
-}))
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: 'qwertyuiop',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+  })
+);
 
 app.use(cors({
   origin: process.env.CORS,
