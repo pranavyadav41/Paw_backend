@@ -77,7 +77,7 @@ class userController {
         return res.status(user.status).json(user);
       } else {
         // Invalid OTP
-        return res.status(400).json({ status: false, message: "Invalid OTP" });
+        return res.status(400).json({ status: false, message: "Invalid OTP hello" });
       }
     } catch (error) {
       next(error);
