@@ -32,7 +32,6 @@ class userController {
         (req.session as SessionData).userData = req.body;
         const otp = this.generateOtp.createOtp();
         (req.session as SessionData).otp = otp;
-        //for otp expire check
         (req.session as SessionData).otpGeneratedAt = new Date().getTime();
         console.log(otp);
         this.generateEmail.sendMail(req.body.email, otp);
@@ -46,6 +45,8 @@ class userController {
   }
   async verifyOtp(req: Request, res: Response, next: NextFunction) {
     try {
+
+      return res.json(req.session)
       const now = new Date().getTime();
       const otpGeneratedAt = (req.session as any).otpGeneratedAt;
       const otpExpiration = 1.5 * 60 * 1000;
@@ -133,7 +134,8 @@ class userController {
   }
   async resendOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      let newOtp: number = this.generateOtp.createOtp();
+      console.log("here")
+      let newOtp: number = this.generateOtp.createOtp();  
       const email = (req.session as SessionData).userData
         ? (req.session as any).userData.email
         : (req.session as any).email;
