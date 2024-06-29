@@ -12,7 +12,8 @@ import Booking from "../../domain/booking";
 import Coupon from "../../domain/coupon";
 import Wallet from "../../domain/wallet";
 import feedback from "../../domain/feedback";
-import jwt from 'jsonwebtoken'
+import Otp from "../../domain/otp";
+import OtpModel from "../database/otpModel";
 
 class UserRepository implements UserRepo {
   //saving user details to database
@@ -31,10 +32,10 @@ class UserRepository implements UserRepo {
 
     return userData;
   }
-  async changePassword(userId: string, password: string): Promise<boolean> {
+  async changePassword(email: string, password: string): Promise<boolean> {
     const result = await UserModel.updateOne(
       {
-        _id: userId,
+        email: email,
       },
       { $set: { password: password } }
     );
@@ -71,7 +72,11 @@ class UserRepository implements UserRepo {
 
     return { coupon: "", found: false };
   }
-  async getBookings(userId: string, page: number, limit: number): Promise<{ bookings: Booking[], total: number } | null> {
+  async getBookings(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<{ bookings: Booking[]; total: number } | null> {
     const startIndex = (page - 1) * limit;
 
     const [bookings, total] = await Promise.all([
@@ -79,8 +84,8 @@ class UserRepository implements UserRepo {
         .sort({ scheduledDate: -1, bookingStatus: 1 })
         .skip(startIndex)
         .limit(limit),
-      BookingModel.countDocuments({ userId })
-    ]); 
+      BookingModel.countDocuments({ userId }),
+    ]);
 
     return { bookings, total };
   }
@@ -172,26 +177,46 @@ class UserRepository implements UserRepo {
   async checkFeedback(userId: string, serviceId: string): Promise<boolean> {
     const result = await FeedbackModel.findOne({ userId, serviceId });
 
-    console.log(result, "result");
-
     return result ? true : false;
   }
   async totalFranchises(): Promise<number> {
-    let count = await FranchiseModel.countDocuments()
-    return count
-
+    let count = await FranchiseModel.countDocuments();
+    return count;
   }
   async totalGroomed(): Promise<number> {
-    let count = await BookingModel.countDocuments()
-    return count
-
+    let count = await BookingModel.countDocuments();
+    return count;
   }
   async totalUsers(): Promise<number> {
-    let count = await UserModel.countDocuments()
-    return count
-
+    let count = await UserModel.countDocuments();
+    return count;
   }
+  async saveOtp(
+    email: string,
+    otp: number,
+    name?: string,
+    phone?: string,
+    password?: string
+  ): Promise<any> {
+    const otpDoc = new OtpModel({
+      name: name,
+      email: email,
+      phone: phone,
+      password: password,
+      otp: otp,
+      otpGeneratedAt: new Date(),
+    });
 
+    const savedDoc = await otpDoc.save();
+
+    return savedDoc;
+  }
+  async findOtpByEmail(email: string): Promise<any> {
+    return OtpModel.findOne({ email }).sort({ otpGeneratedAt: -1 });
+  }
+  async deleteOtpByEmail(email: string): Promise<any> {
+    return OtpModel.deleteOne({ email });
+  }
 }
 
 export default UserRepository;

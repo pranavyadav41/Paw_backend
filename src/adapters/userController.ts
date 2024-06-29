@@ -6,22 +6,14 @@ import SessionData from "../domain/sessionData";
 
 class userController {
   private userUseCase: UserUseCase;
-  private generateOtp: GenerateOtp;
-  private generateEmail: sendOtp;
 
-  constructor(
-    userUseCase: UserUseCase,
-    generateOtp: GenerateOtp,
-    generateEmail: sendOtp
-  ) {
+  constructor(userUseCase: UserUseCase) {
     this.userUseCase = userUseCase;
-    this.generateOtp = generateOtp;
-    this.generateEmail = generateEmail;
   }
 
   async signUp(req: Request, res: Response, next: NextFunction) {
     try {
-      const verifyUser = await this.userUseCase.signup(req.body.email);
+      const verifyUser = await this.userUseCase.checkExist(req.body.email);
 
       if (verifyUser.data.status == true && req.body.isGoogle) {
         const user = await this.userUseCase.verifyOtpUser(req.body);
@@ -29,15 +21,13 @@ class userController {
       }
 
       if (verifyUser.data.status == true) {
-        (req.session as SessionData).userData = req.body;
-        const otp = this.generateOtp.createOtp();
-        (req.session as SessionData).otp = otp;
-        //for otp expire check
-        (req.session as SessionData).otpGeneratedAt = new Date().getTime();
-        console.log(otp)
-        console.log(req.session)
-        this.generateEmail.sendMail(req.body.email, otp);
-        return res.status(verifyUser.status).json(verifyUser.data);
+        const sendOtp = await this.userUseCase.signup(
+          req.body.email,
+          req.body.name,
+          req.body.phone,
+          req.body.password
+        );
+        return res.status(sendOtp.status).json(sendOtp.data);
       } else {
         return res.status(verifyUser.status).json(verifyUser.data);
       }
@@ -47,38 +37,33 @@ class userController {
   }
   async verifyOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log(req.session)
-      const now = new Date().getTime();
-      const otpGeneratedAt = (req.session as any).otpGeneratedAt;
-      const otpExpiration = 1.5 * 60 * 1000;
+      const { otp, email } = req.body;
 
-      if (now - otpGeneratedAt > otpExpiration) {
-        // OTP has expired
-        return res
-          .status(400)
-          .json({ status: false, message: "OTP has expired" });
+      let verify = await this.userUseCase.verifyOtp(email, otp);
+
+      if (verify.status == 400) {
+        return res.status(verify.status).json({ message: verify.message });
+      } else if (verify.status == 200) {
+        let save = await this.userUseCase.verifyOtpUser(verify.data);
+
+        if (save) {
+          return res.status(save.status).json(save);
+        }
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async forgotVerifyOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { otp, email } = req.body;
 
-      if (req.body.userId !== "" && req.body.otp === (req.session as any).otp) {
-        // OTP is valid for user ID
-        (req.session as SessionData).otp = null;
-        (req.session as SessionData).otpGeneratedAt = null;
-        return res.status(200).json({
-          message: "Verified successfully",
-          userId: req.body.userId,
-        });
-      } else if (req.body.otp === (req.session as SessionData).otp) {
-        // OTP is valid, but no user ID provided
-        const user = await this.userUseCase.verifyOtpUser(
-          (req.session as any).userData
-        );
-        (req.session as any).userData = null;
-        (req.session as SessionData).otp = null;
-        (req.session as SessionData).otpGeneratedAt = null;
-        return res.status(user.status).json(user);
-      } else {
-        // Invalid OTP
-        return res.status(400).json({ status: false, message: "Invalid OTP" });
+      let verify = await this.userUseCase.verifyOtp(email, otp);
+
+      if (verify.status == 400) {
+        return res.status(verify.status).json({ message: verify.message });
+      } else if (verify.status == 200) {
+        return res.status(verify.status).json(verify.message);
       }
     } catch (error) {
       next(error);
@@ -89,8 +74,6 @@ class userController {
       const { email, password } = req.body;
 
       const user = await this.userUseCase.login(email, password);
-
-      console.log(user, "user")
 
       return res.status(user.status).json(user.data);
     } catch (error) {
@@ -104,13 +87,6 @@ class userController {
       const user = await this.userUseCase.forgotPassword(email);
 
       if (user.status == 200) {
-        const otp = this.generateOtp.createOtp();
-        (req.session as SessionData).otp = otp;
-        (req.session as SessionData).email = req.body.email;
-        //for otp expire check
-        (req.session as SessionData).otpGeneratedAt = new Date().getTime();
-        this.generateEmail.sendMail(email, otp);
-
         return res.status(user.status).json(user.data);
       } else {
         return res.status(user.status).json(user.data);
@@ -121,11 +97,11 @@ class userController {
   }
   async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { password, userId } = req.body;
+      const { password, email } = req.body;
 
       const changePassword = await this.userUseCase.resetPassword(
         password,
-        userId
+        email
       );
 
       return res.status(changePassword.status).json(changePassword.message);
@@ -135,16 +111,29 @@ class userController {
   }
   async resendOtp(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("here")
-      let newOtp: number = this.generateOtp.createOtp();  
-      const email = (req.session as SessionData).userData
-        ? (req.session as any).userData.email
-        : (req.session as any).email;
-      //for otp expire check
-      (req.session as SessionData).otpGeneratedAt = new Date().getTime();
-      (req.session as SessionData).otp = newOtp;
-      this.generateEmail.sendMail(email, newOtp);
-      return res.json({ message: "Otp has been sent to your email" });
+      const { email } = req.body;
+      let resend = await this.userUseCase.resendOtp(email);
+      if (resend) {
+        return res.status(resend.status).json({ message: resend.message });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+  async resentOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, name, password, phone } = req.body;
+
+      let resent = await this.userUseCase.resentOtp(
+        email,
+        name,
+        phone,
+        password
+      );
+
+      if (resent) {
+        return res.status(resent.status).json({ message: resent.message });
+      }
     } catch (error) {
       next(error);
     }
@@ -278,7 +267,7 @@ class userController {
       let check = await this.userUseCase.checkDate(bookId, date);
 
       return res.status(check.status).json(check.data);
-    } catch (error) { }
+    } catch (error) {}
   }
   async confirmCancel(req: Request, res: Response, next: NextFunction) {
     try {
@@ -291,7 +280,7 @@ class userController {
       );
 
       return res.status(cancel.status).json({ message: cancel.message });
-    } catch (error) { }
+    } catch (error) {}
   }
   async getWallet(req: Request, res: Response, next: NextFunction) {
     try {
@@ -300,7 +289,7 @@ class userController {
       let wallet = await this.userUseCase.getWallet(userId);
 
       return res.status(wallet.status).json(wallet.data);
-    } catch (error) { }
+    } catch (error) {}
   }
   async submitFeedback(req: Request, res: Response, next: NextFunction) {
     try {
@@ -352,30 +341,14 @@ class userController {
     }
   }
   async homePageData(req: Request, res: Response, next: NextFunction) {
-
     try {
       let data = await this.userUseCase.homePageData();
 
       if (data) {
-        return res.status(data.status).json(data.data)
+        return res.status(data.status).json(data.data);
       }
-
     } catch (error) {
       next(error);
-
-    }
-  }
-  async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      req.session.destroy(err => {
-        if (err) {
-          return res.status(400).json({ message: 'Failed to log out' });
-        }
-        res.status(200).json({ message: 'Logged out successfully' });
-      });
-    } catch (error) {
-      next(error)
-
     }
   }
 }

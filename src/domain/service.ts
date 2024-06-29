@@ -5,7 +5,7 @@ interface Service {
       small: string;
       medium: string;
       large: string;
-      xLarge:string;
+      xLarge:string; 
   };
 
 }

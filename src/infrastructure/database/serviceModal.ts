@@ -3,7 +3,7 @@ import Service from "../../domain/service";
 
 const serviceSchema: Schema = new Schema<Service>({
     category: {
-        type: String,
+        type: String, 
         required: true
     },
     services: [
@@ -14,7 +14,7 @@ const serviceSchema: Schema = new Schema<Service>({
     ],
     price: {
         small: { 
-            type: String,
+            type: String, 
             required: true
         },
         medium: {

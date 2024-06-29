@@ -1,28 +1,36 @@
 import User from "../domain/user";
 import UserRepository from "../infrastructure/repository/userRepository";
 import EncryptPassword from "../infrastructure/services/bcryptPassword";
+import GenerateOtp from "../infrastructure/services/generateOtp";
 import JWTToken from "../infrastructure/services/generateToken";
 import { IFile } from "../infrastructure/services/s3Bucket";
 import S3Uploader from "../infrastructure/services/s3Bucket";
+import sendOtp from "../infrastructure/services/sendEmail";
 
 class UserUseCase {
   private UserRepository: UserRepository;
   private EncryptPassword: EncryptPassword;
   private JwtToken: JWTToken;
   private s3bucket: S3Uploader;
+  private generateOtp: GenerateOtp;
+  private generateEmail: sendOtp;
 
   constructor(
     UserRepository: UserRepository,
     encryptPassword: EncryptPassword,
     jwtToken: JWTToken,
-    s3bucket: S3Uploader
+    s3bucket: S3Uploader,
+    generateOtp: GenerateOtp,
+    generateEmail: sendOtp
   ) {
     this.UserRepository = UserRepository;
     this.EncryptPassword = encryptPassword;
     this.JwtToken = jwtToken;
     this.s3bucket = s3bucket;
+    this.generateOtp = generateOtp;
+    this.generateEmail = generateEmail;
   }
-  async signup(email: string) {
+  async checkExist(email: string) {
     const userExist = await this.UserRepository.findByEmail(email);
 
     if (userExist) {
@@ -33,7 +41,23 @@ class UserUseCase {
           message: "User already exists",
         },
       };
+    } else {
+      return {
+        status: 200,
+        data: {
+          status: true,
+          message: "User does not exist",
+        },
+      };
     }
+  }
+
+  async signup(email: string, name: string, phone: string, password: string) {
+    const otp = this.generateOtp.createOtp();
+    const hashedPassword = await this.EncryptPassword.encryptPassword(password);
+    await this.UserRepository.saveOtp(email, otp, name, phone, hashedPassword);
+    this.generateEmail.sendMail(email, otp);
+
     return {
       status: 200,
       data: {
@@ -42,12 +66,67 @@ class UserUseCase {
       },
     };
   }
-  async verifyOtpUser(user: User) {
-    const hashedPassword = await this.EncryptPassword.encryptPassword(
-      user.password
-    );
+  async verifyOtp(email: string, otp: number) {
+    const otpRecord = await this.UserRepository.findOtpByEmail(email);
 
-    const newUser = { ...user, password: hashedPassword };
+    let data: { name: string; email: string; phone: string; password: string } =
+      {
+        name: otpRecord?.name,
+        email: otpRecord?.email,
+        phone: otpRecord?.phone,
+        password: otpRecord?.password,
+      };
+
+    if (!otpRecord) {
+      return { status: 400, message: "Invalid or expired OTP" };
+    }
+
+    const now = new Date().getTime();
+    const otpGeneratedAt = new Date(otpRecord.otpGeneratedAt).getTime();
+    const otpExpiration = 2 * 60 * 1000;
+
+    if (now - otpGeneratedAt > otpExpiration) {
+      await this.UserRepository.deleteOtpByEmail(email);
+      return { status: 400, message: "OTP has expired" };
+    }
+
+    if (otpRecord.otp !== otp) {
+      return { status: 400, message: "Invalid OTP" };
+    }
+
+    await this.UserRepository.deleteOtpByEmail(email);
+
+    return { status: 200, message: "OTP verified successfully", data: data };
+  }
+
+  async verifyOtpUser(user: any) {
+    if (user?.isGoogle) {
+      const hashedPassword = await this.EncryptPassword.encryptPassword(
+        user.password
+      );
+
+      const newUser = { ...user, password: hashedPassword };
+
+      const userData = await this.UserRepository.save(newUser);
+
+      let data = {
+        _id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        isBlocked: userData.isBlocked,
+      };
+
+      const token = this.JwtToken.generateToken(userData._id, "user");
+
+      return {
+        status: 200,
+        data: data,
+        token,
+      };
+    }
+
+    const newUser = { ...user };
 
     const userData = await this.UserRepository.save(newUser);
 
@@ -64,6 +143,7 @@ class UserUseCase {
     return {
       status: 200,
       data: data,
+      message: "OTP verified successfully",
       token,
     };
   }
@@ -146,12 +226,16 @@ class UserUseCase {
     let userExist = await this.UserRepository.findByEmail(email);
 
     if (userExist) {
+      const otp = this.generateOtp.createOtp();
+      await this.UserRepository.saveOtp(email, otp);
+      this.generateEmail.sendMail(email, otp);
+
       return {
         status: 200,
         data: {
           status: true,
           message: "Verification otp sent to your Email",
-          userId: userExist._id,
+          email: userExist.email,
         },
       };
     } else {
@@ -164,10 +248,10 @@ class UserUseCase {
       };
     }
   }
-  async resetPassword(password: string, userId: string) {
+  async resetPassword(password: string, email: string) {
     const hashedPassword = await this.EncryptPassword.encryptPassword(password);
     const changePassword = await this.UserRepository.changePassword(
-      userId,
+      email,
       hashedPassword
     );
     if (changePassword) {
@@ -189,6 +273,26 @@ class UserUseCase {
       status: 200,
       data: service,
     };
+  }
+  async resentOtp(
+    email: string,
+    name: string,
+    phone: string,
+    password: string
+  ) {
+    const otp = this.generateOtp.createOtp();
+    const hashedPassword = await this.EncryptPassword.encryptPassword(password);
+    await this.UserRepository.saveOtp(email, otp, name, phone, hashedPassword);
+    this.generateEmail.sendMail(email, otp);
+
+    return { status: 200, message: "Otp has been sent to your email" };
+  }
+  async resendOtp(email: string) {
+    const otp = this.generateOtp.createOtp();
+    await this.UserRepository.saveOtp(email, otp);
+    this.generateEmail.sendMail(email, otp);
+
+    return { status: 200, message: "Otp has been sent to your email" };
   }
   async editProfile(
     Id: string,
@@ -298,24 +402,24 @@ class UserUseCase {
   }
   async getBookings(userId: string, page: number, limit: number) {
     const result = await this.UserRepository.getBookings(userId, page, limit);
-    
+
     if (result) {
       const { bookings, total } = result;
       const totalPages = Math.ceil(total / limit);
-  
+
       return {
         status: 200,
-        data: { 
+        data: {
           bookings,
           currentPage: page,
           totalPages,
-          totalBookings: total
-        }
+          totalBookings: total,
+        },
       };
     } else {
       return {
         status: 400,
-        message: "Failed to fetch bookings. Please try again!"
+        message: "Failed to fetch bookings. Please try again!",
       };
     }
   }
@@ -449,7 +553,6 @@ class UserUseCase {
         const feedback = feedbacks[i];
         const imageNames = feedback.images;
 
-
         const signedUrls = await this.s3bucket.getSignedImageUrls(imageNames);
 
         feedback.images = signedUrls;
@@ -458,37 +561,33 @@ class UserUseCase {
 
     return {
       status: 200,
-      data: feedbacks
-    }
+      data: feedbacks,
+    };
   }
   async checkFeedback(userId: string, serviceId: string) {
-
     const check = await this.UserRepository.checkFeedback(userId, serviceId);
 
     return {
       status: 200,
-      data: check
-    }
+      data: check,
+    };
   }
   async homePageData() {
-    const totalUser = await this.UserRepository.totalUsers()
+    const totalUser = await this.UserRepository.totalUsers();
     if (totalUser) {
-      const totalFranchises = await this.UserRepository.totalFranchises()
+      const totalFranchises = await this.UserRepository.totalFranchises();
       if (totalFranchises) {
-
-        const totalBookings = await this.UserRepository.totalGroomed()
+        const totalBookings = await this.UserRepository.totalGroomed();
 
         return {
-          status:200,
-          data:{
-            totalUsers:totalUser,
-            totalBookings:totalBookings,
-            totalFranchises:totalFranchises
-          }
-        }
-
+          status: 200,
+          data: {
+            totalUsers: totalUser,
+            totalBookings: totalBookings,
+            totalFranchises: totalFranchises,
+          },
+        };
       }
-
     }
   }
 }

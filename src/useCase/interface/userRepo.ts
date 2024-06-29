@@ -4,6 +4,7 @@ import Booking from '../../domain/booking';
 import franchise from '../../domain/franchise';
 import Wallet from '../../domain/wallet';
 import feedback from '../../domain/feedback';
+import Otp from '../../domain/otp';
 
 
 interface UserRepo {
@@ -13,7 +14,7 @@ interface UserRepo {
     findById(_id:string): Promise<User | null>
     getService(Id:string):Promise<any>
     editProfile(Id:string,data:{name:string,email:string,phone:string}):Promise<boolean>
-    changePassword(Id:string,password:string):Promise<boolean>
+    changePassword(email:string,password:string):Promise<boolean>
     getService(Id:string):Promise<any>
     editProfile(Id:string,data:{name:string,email:string,phone:string}):Promise<boolean>
     findAllCoupons():Promise<Coupon[]>;
@@ -31,6 +32,9 @@ interface UserRepo {
     totalUsers():Promise<number>
     totalFranchises():Promise<number>
     totalGroomed():Promise<number>
+    saveOtp(email:string,otp:number,name:string,phone:string,password:string):Promise<any>
+    findOtpByEmail(email:string):Promise<any>
+    deleteOtpByEmail(email:string):Promise<any>
 }
 
 export default UserRepo;      

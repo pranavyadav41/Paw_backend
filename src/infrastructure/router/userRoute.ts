@@ -22,18 +22,20 @@ const s3bucket = new S3Uploader
 const userRepository=new UserRepository()
 
 //useCases 
-const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken,s3bucket) 
+const userCase = new UserUseCase(userRepository,encryptPassword,jwtToken,s3bucket,generateOtp,generateEmail) 
 //controllers
-const userController=new UserController(userCase,generateOtp,generateEmail)
+const userController=new UserController(userCase)
 
 const route = express.Router();
 
  
 route.post('/sign_up',(req,res,next)=>userController.signUp(req,res,next))
 route.post('/verify',(req,res,next)=>userController.verifyOtp(req,res,next))
+route.post('/fVerify',(req,res,next)=>userController.forgotVerifyOtp(req,res,next))
 route.post('/login',(req,res,next)=>userController.login(req,res,next))
 route.post('/verifyEmail',(req,res,next)=>userController.forgotPassword(req,res,next))
 route.post('/resetPassword',(req,res,next)=>userController.resetPassword(req,res,next))
+route.post('/resend_otp',(req,res,next)=>userController.resentOtp(req,res,next))
 route.post('/resendOtp',(req,res,next)=>userController.resendOtp(req,res,next))
 route.get('/service/:id',(req,res,next)=>userController.getService(req,res,next))
 route.post('/editProfile',userAuth,(req,res,next)=>userController.updateProfile(req,res,next))
@@ -51,7 +53,6 @@ route.post('/submitFeedback',upload.array('images'),userAuth,(req,res,next)=>use
 route.post('/getFeedbacks',(req,res,next)=>userController.getFeedbacks(req,res,next))
 route.post('/checkFeedback',userAuth,(req,res,next)=>userController.checkFeedback(req,res,next))
 route.get('/homePageData',(req,res,next)=>userController.homePageData(req,res,next))
-route.post('/logout',(req,res,next)=>userController.logout(req,res,next))
 
 
 //Booking 
